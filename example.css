@@ -1,0 +1,105 @@
+/*
+ * CX Product Badges - Příklad CSS pro Bricks Builder
+ * 
+ * POUŽITÍ V BRICKS:
+ * 1. Bricks → Settings → Custom Code → CSS
+ * 2. Zkopírujte tento kód
+ * 3. Upravte barvy/velikosti podle potřeby
+ * 
+ * DŮLEŽITÉ:
+ * - Plugin vykresluje POUZE čistý HTML
+ * - Tento CSS definuje vizuální styl badge
+ * - %root% je Bricks prefix pro specifičnost
+ */
+
+/* ===== WRAPPER BADGE ===== */
+%root% .crystalex-badges-wrapper {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  margin-bottom: 12px !important;
+}
+
+/* ===== ZÁKLADNÍ STYL VŠECH BADGE ===== */
+%root% .crystalex-badges-wrapper .badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  /* Vertikální centrování */
+  line-height: 1 !important;
+  padding: 6px 12px 7px !important;
+
+  /* Typografie */
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+
+  /* Barvy (základní šedá) */
+  color: #fff !important;
+  background-color: rgba(0, 0, 0, 0.88) !important;
+
+  /* Okraje a tvar */
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border-radius: 999px !important; /* Zaoblené jako pilulka */
+
+  /* Ostatní */
+  white-space: nowrap !important;
+  pointer-events: none !important;
+  transform: translateZ(0) !important;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.4) !important;
+}
+
+/* ===== SPECIFICKÉ BARVY PRO JEDNOTLIVÉ TAGY ===== */
+
+/* Tag: Novinka */
+%root% .badge-novinka {
+  background-color: #4CAF50 !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Tag: Akce */
+%root% .badge-akce {
+  background-color: #FF5722 !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Tag: Bestseller */
+%root% .badge-bestseller {
+  background-color: #2196F3 !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Tag: Limitka / Limitovaná edice */
+%root% .badge-limitka,
+%root% .badge-limitovana-edice {
+  background-color: #FF9800 !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #000 !important;
+  text-shadow: 0 1px 1px rgba(255,255,255,0.3) !important;
+}
+
+/* Tag: Exkluzivní */
+%root% .badge-exkluzivni {
+  background-color: #9C27B0 !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Tag: Česká výroba */
+%root% .badge-ceska-vyroba {
+  background-color: #D32F2F !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/*
+ * POZNÁMKA:
+ * Pro přidání dalších barev použijte pattern:
+ * 
+ * %root% .badge-{slug-tagu} {
+ *   background-color: #BARVA !important;
+ *   border-color: rgba(255, 255, 255, 0.2) !important;
+ * }
+ * 
+ * Slug tagu najdete v: Produkty → Štítky produktu
+ */

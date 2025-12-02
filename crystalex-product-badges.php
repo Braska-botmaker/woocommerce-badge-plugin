@@ -69,7 +69,7 @@ function crystalex_get_product_badge_tags( $product_id ) {
 }
 
 /**
- * Vykreslení badge na frontendu před názvem produktu
+ * Vykreslení badge na frontendu
  * Každý tag produktu se zobrazí jako badge
  */
 function crystalex_render_badges() {
@@ -91,13 +91,13 @@ function crystalex_render_badges() {
 	}
 	
 	// Vykreslení badge
-	echo '<div class="crystalex-badges-wrapper">';
+	echo '<div class="crystalex-badges-wrapper" style="margin: 10px 0;">';
 	
 	foreach ( $product_tags as $tag ) {
 		// Vykreslení badge jako span element
 		// Slug tagu = CSS třída, Name tagu = zobrazený text
 		printf(
-			'<span class="badge badge-%s">%s</span>',
+			'<span class="badge badge-%s" style="display: inline-block; padding: 4px 10px; margin: 0 5px 5px 0; font-size: 12px; font-weight: 600; background: #333; color: #fff; border-radius: 3px;">%s</span>',
 			esc_attr( $tag->slug ),
 			esc_html( $tag->name )
 		);
@@ -105,5 +105,9 @@ function crystalex_render_badges() {
 	
 	echo '</div>';
 }
-// Zavěsit vykreslení badge před titulek produktu na archive stránkách
+
+// Zkusit více hooků pro různé typy zobrazení produktů
 add_action( 'woocommerce_before_shop_loop_item_title', 'crystalex_render_badges', 10 );
+add_action( 'woocommerce_after_shop_loop_item_title', 'crystalex_render_badges', 5 );
+add_action( 'woocommerce_before_single_product_summary', 'crystalex_render_badges', 5 );
+add_action( 'woocommerce_single_product_summary', 'crystalex_render_badges', 5 );

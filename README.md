@@ -1,22 +1,22 @@
-# Crystalex Product Badges
+# CX Product Badges
 
-WordPress plugin pro WooCommerce, který automaticky zobrazuje badge podle tagů produktu. Žádné přednastavené badge, žádný meta box - čistě dynamický systém!
+WordPress plugin pro WooCommerce, který automaticky zobrazuje badge podle tagů produktu. Žádné přednastavené badge, žádné inline styly - čistě dynamický systém!
 
 ## 📋 Popis
 
-Plugin automaticky zobrazuje každý tag produktu jako badge. Jednoduše vytvoříte tag v WooCommerce, přiřadíte ho k produktu a badge se objeví na frontendu.
+Plugin automaticky zobrazuje každý tag produktu jako badge. Vytvoříte tag v WooCommerce, přiřadíte ho k produktu a badge se zobrazí pomocí hooků nebo shortcode.
 
-**Každý tag = badge** - maximální flexibilita bez omezení!
+**Každý tag = badge** - maximální flexibilita, stylování plně pod vaší kontrolou!
 
 ## ✨ Funkce
 
 - ✅ **100% dynamický systém** - žádné přednastavené badge
-- ✅ **Automatické zobrazení** - každý tag produktu = badge
+- ✅ **Čistý HTML výstup** - BEZ inline stylů, stylujte si badge zcela podle sebe
 - ✅ **Neomezený počet badge** - vytvořte kolik tagů chcete
+- ✅ **Bricks Builder kompatibilní** - shortcode `[cx_product_badges]`
 - ✅ **Plná podpora WPML překladů** - tagy i badge se automaticky překládají
-- ✅ **Čistý HTML výstup** - bez vlastních stylů, plná kontrola přes CSS
-- ✅ **Jednoduché použití** - funguje okamžitě po aktivaci
-- ✅ **Kompatibilní s WooCommerce** - používá standardní hooky a taxonomie
+- ✅ **Prevence duplicit** - badge se renderují pouze jednou
+- ✅ **Robustní detekce produktu** - funguje i bez global $product
 
 ## 📦 Požadavky
 
@@ -26,28 +26,35 @@ Plugin automaticky zobrazuje každý tag produktu jako badge. Jednoduše vytvoř
 
 ## 🚀 Instalace
 
-1. Stáhněte soubor `crystalex-product-badges.php`
-2. Nahrajte ho do složky `/wp-content/plugins/crystalex-product-badges/`
-3. Aktivujte plugin v administraci WordPress přes menu **Pluginy**
-4. Plugin funguje okamžitě - žádné nastavení není potřeba!
+1. Stáhněte ZIP soubor pluginu
+2. V administraci WordPress: **Pluginy → Přidat nový → Nahrát plugin**
+3. Vyberte ZIP soubor a klikněte na **Instalovat**
+4. **Aktivujte** plugin
+5. Plugin funguje okamžitě - žádné nastavení!
 
 ## 📖 Použití
 
-### Krok 1: Vytvoření tagů
+### Varianta A: Standardní WooCommerce (automaticky)
 
-1. V administraci WordPress přejděte do **Produkty → Štítky produktu**
-2. Vytvořte nový tag (např. "Novinka", "Akce", "Bestseller", "Limitovaná edice")
-3. Tag se automaticky stane dostupným jako badge
+Plugin automaticky zobrazí badge na těchto místech:
+- **Výpis produktů** (shop, archiv, kategorie) - před názvem
+- **Detail produktu** - nad popisem
 
-### Krok 2: Přiřazení tagů k produktům
+### Varianta B: Bricks Builder (shortcode)
 
-1. Otevřete editaci produktu
-2. V sekci **"Štítky produktu"** vpravo přidejte tagy
+**DŮLEŽITÉ:** Pro použití v Bricks Builderu musíte vložit shortcode **mezi Dynamic Data fields**.
+
+1. V Bricks editoru otevřete template produktu
+2. Přidejte element **Shortcode**
+3. Do pole "Shortcode" vložte: `[cx_product_badges]`
+4. Badge se zobrazí přesně tam, kde máte shortcode element
+
+### Přidání tagů k produktům
+
+1. **Produkty → Štítky produktu** - vytvořte tagy (např. "Novinka", "Akce", "Bestseller")
+2. V editaci produktu přiřaďte tagy v sekci **"Štítky produktu"**
 3. Uložte produkt
-
-### Krok 3: Hotovo!
-
-Badge se automaticky zobrazí na frontendu před názvem produktu.
+4. Badge se automaticky zobrazí!
 
 ## 💡 Příklady použití
 
@@ -66,59 +73,77 @@ Badge se automaticky zobrazí na frontendu před názvem produktu.
 
 ## 🎨 Styling
 
-Plugin vykresluje badge jako HTML elementy bez vlastních stylů:
+**DŮLEŽITÉ:** Plugin vykresluje **čistý HTML bez jakýchkoliv inline stylů**!
 
+Výstup vypadá takto:
 ```html
 <div class="crystalex-badges-wrapper">
     <span class="badge badge-novinka">Novinka</span>
-    <span class="badge badge-limitka">Limitka</span>
+    <span class="badge badge-akce">Akce</span>
 </div>
 ```
 
-### CSS třídy
+### CSS třídy pro stylování
 
-Každá badge má dvě CSS třídy:
-- `badge` - společná třída pro všechny badge
-- `badge-{slug}` - specifická třída podle typu badge
+Každá badge má tyto CSS třídy:
+- `.crystalex-badges-wrapper` - obal všech badge
+- `.badge` - společná třída pro všechny badge
+- `.badge-{slug}` - specifická třída podle slugu tagu (např. `.badge-novinka`, `.badge-akce`)
 
-**Příklad vlastního stylingu:**
+### Příklad stylování
+
+Přidejte si do svého CSS (v tématu, Bricks CSS editoru, nebo Additional CSS):
 
 ```css
-/* Základní styl */
+/* Wrapper badge */
 .crystalex-badges-wrapper {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
+/* Základní styl všech badge */
 .badge {
     display: inline-block;
-    padding: 4px 10px;
-    font-size: 12px;
-    font-weight: 600;
+    padding: 5px 12px;
+    font-size: 11px;
+    font-weight: 700;
     text-transform: uppercase;
-    border-radius: 4px;
-    background: #000;
+    letter-spacing: 0.5px;
+    border-radius: 3px;
+    background: #333;
     color: #fff;
 }
 
-/* Specifické barvy */
+/* Specifické barvy pro jednotlivé tagy */
 .badge-novinka {
     background: #4CAF50;
+    color: #fff;
 }
 
-.badge-limitka {
-    background: #FF9800;
+.badge-akce {
+    background: #FF5722;
+    color: #fff;
 }
 
 .badge-bestseller {
     background: #2196F3;
+    color: #fff;
+}
+
+.badge-limitka {
+    background: #FF9800;
+    color: #000;
 }
 
 .badge-exkluzivni {
     background: #9C27B0;
+    color: #fff;
 }
 ```
+
+**V Bricks Builderu:** CSS můžete přidat do **Bricks → Settings → Custom Code → CSS**
 
 ## 🌍 WPML Podpora
 
@@ -146,48 +171,60 @@ WPML automaticky překládá názvy tagů, takže badge se zobrazují v jazyce a
 
 **WPML se stará o vše automaticky - žádná další konfigurace není potřeba!**
 
-## 🔧 Přizpůsobení
+## 🔧 Pokročilé použití
 
-### Změna pozice badge
+### Shortcode v Bricks Builderu
 
-Badge jsou standardně zavěšené na hook:
-```php
-woocommerce_before_shop_loop_item_title
+**KRITICKÉ:** Shortcode `[cx_product_badges]` musíte vložit **jako Dynamic Data field**, ne jako běžný text!
+
+**Správný postup:**
+1. V Bricks editoru přidejte element **Shortcode**
+2. Do pole vložte: `[cx_product_badges]`
+3. Badge se zobrazí v product loopu
+
+**Nebo použijte v textu s Dynamic Data:**
+1. Přidejte Text element
+2. Klikněte na ikonu **{x}** (Dynamic Data)
+3. Vyberte **Shortcode**
+4. Vložte: `[cx_product_badges]`
+
+### Přidání nových badge
+
+Jednoduše vytvořte nový tag v **Produkty → Štítky produktu** - není potřeba měnit žádný kód!
+
+**Příklad:** Badge "Česká výroba"
+1. Vytvořte tag "Česká výroba" (slug bude automaticky `ceska-vyroba`)
+2. Přiřaďte tag k produktům
+3. Přidejte CSS pro styling:
+```css
+.badge-ceska-vyroba {
+    background: #D32F2F;
+    color: #fff;
+}
 ```
-
-Pro změnu pozice upravte v souboru `crystalex-product-badges.php`:
-
-```php
-// Příklad: Badge za cenou produktu
-add_action( 'woocommerce_after_shop_loop_item', 'crystalex_render_badges', 10 );
-```
-
-### Přidání vlastních badge
-
-Jednoduše vytvořte nový tag v **Produkty → Štítky produktu**! Není potřeba žádný kód měnit.
-
-**Příklad:** Chcete přidat badge "Výroba v ČR"
-1. Vytvořte tag "Výroba v ČR"
-2. Přiřaďte ho k produktům
-3. Badge se automaticky zobrazí ✓
 
 ### Hromadná úprava tagů
 
-Můžete použít standardní WordPress funkce:
+- **Produkty → Hromadné úpravy** - přidejte tagy více produktům najednou
+- **Import/Export** - importujte produkty s tagy pomocí WooCommerce CSV
+- **Rychlá úprava** - v seznamu produktů klikněte "Rychlá úprava"
 
-1. **Produkty → Hromadné úpravy** - přidejte tag více produktům najednou
-2. **Import/Export** - importujte produkty s tagy pomocí WooCommerce CSV
-3. **Rychlá úprava** - v seznamu produktů klikněte na "Rychlá úprava" a přidejte tagy
+## 🔌 Technické detaily
 
-## 🔌 WooCommerce Hooky
+### WooCommerce Hooky
 
-Plugin používá následující WooCommerce hooky:
+Plugin používá tyto hooky pro automatické zobrazení:
 
-| Hook | Použití |
-|------|---------|
-| `add_meta_boxes` | Přidání meta boxu do admin rozhraní |
-| `save_post` | Uložení dat při ukládání produktu |
-| `woocommerce_before_shop_loop_item_title` | Vykreslení badge na frontendu |
+| Hook | Kdy se použije |
+|------|----------------|
+| `woocommerce_before_shop_loop_item_title` | Výpis produktů (shop, archiv, kategorie) |
+| `woocommerce_before_single_product_summary` | Detail produktu |
+
+### Shortcode
+
+| Shortcode | Použití |
+|-----------|---------|
+| `[cx_product_badges]` | Pro Bricks Builder a custom templates |
 
 ## 📝 Uložení dat
 
@@ -197,16 +234,35 @@ Veškerá data jsou uložená standardním WordPress způsobem v tabulce `wp_ter
 
 ## 🐛 Řešení problémů
 
-### Badge se nezobrazují na frontendu
+### Badge se nezobrazují
 
-1. Zkontrolujte, zda je produkt publikovaný
-2. Ověřte, že produkt má přiřazené tagy (v editaci produktu)
-3. Zkontrolujte, zda vaše téma podporuje hook `woocommerce_before_shop_loop_item_title`
-4. Zkuste vymazat cache (pokud používáte caching plugin)
+**Standardní WooCommerce:**
+1. Zkontrolujte, že produkt má přiřazené tagy
+2. Vyčistěte cache (pokud používáte caching plugin)
+3. Ověřte, že je plugin aktivní
 
-### Badge se zobrazují i u produktů, kde je nechci
+**V Bricks Builderu:**
+1. **DŮLEŽITÉ:** Shortcode `[cx_product_badges]` musí být vložen jako **Dynamic Data field**, ne jako prostý text
+2. Použijte element **Shortcode** a vložte `[cx_product_badges]`
+3. Ujistěte se, že je shortcode uvnitř product loop
 
-Odeberte příslušné tagy z produktu. Plugin zobrazuje badge pouze pro produkty s tagy.
+### Badge nemají styling
+
+Plugin **záměrně** nevkládá žádné inline styly! Musíte si přidat vlastní CSS:
+```css
+.badge {
+    display: inline-block;
+    padding: 5px 10px;
+    background: #333;
+    color: #fff;
+}
+```
+
+### Badge se zobrazují víckrát
+
+Plugin má zabudovanou prevenci duplicit. Pokud se badge opakují, může to být způsobeno:
+- Máte více elementů se shortcode
+- Cache problém - vyčistěte cache
 
 ### WPML překlady nefungují
 
@@ -271,15 +327,18 @@ Plugin vytvořen pro Crystalex s použitím moderních WordPress a WooCommerce s
 
 ---
 
-## 🎯 Proč tento plugin?
+---
 
-**Jednoduchost** - Žádné složité nastavení, žádné meta boxy. Vytvořte tag, přiřaďte ho k produktu a máte badge.
+## 📌 Rychlý přehled
 
-**Flexibilita** - Neomezený počet badge, žádné přednastavené typy. Vytvořte si badge jaké potřebujete.
-
-**Standardní přístup** - Používá WooCommerce tagy, které už znáte. Žádné nové koncepty k učení.
-
-**WPML ready** - Plná podpora vícejazyčných webů bez extra konfigurace.
+| Vlastnost | Popis |
+|-----------|-------|
+| **HTML výstup** | Čistý HTML bez inline stylů |
+| **Bricks Builder** | Shortcode `[cx_product_badges]` v Dynamic Data |
+| **Styling** | 100% pod vaší kontrolou přes CSS |
+| **Tagy → Badge** | Každý WooCommerce tag = automatický badge |
+| **WPML** | Plná podpora překladů |
+| **Duplicity** | Automatická prevence |
 
 ---
 
