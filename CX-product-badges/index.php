@@ -2,17 +2,18 @@
 /**
  * Plugin Name: CX Product Badges
  * Description: Automaticky zobrazuje badge podle tagů produktu - každý tag = badge
- * Version: 1.4.0
+ * Version: 1.5.0
  * Author: Crystalex
  * Author URI: https://crystalex.com
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: crystalex-badges
  * Domain Path: /languages
- * Requires at least: 5.0
+ * Requires at least: 6.0
  * Requires PHP: 7.4
- * WC requires at least: 4.0
- * WC tested up to: 8.0
+ * WC requires at least: 7.0
+ * WC tested up to: 9.5
+ * Tested up to: 6.7
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -55,6 +56,17 @@ function crystalex_load_textdomain() {
 	);
 }
 add_action( 'plugins_loaded', 'crystalex_load_textdomain' );
+
+/**
+ * Deklarace kompatibility s WooCommerce features (HPOS, Cart/Checkout blocks).
+ */
+function crystalex_declare_woocommerce_compatibility() {
+	if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
+		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'cart_checkout_blocks', __FILE__, true );
+	}
+}
+add_action( 'before_woocommerce_init', 'crystalex_declare_woocommerce_compatibility' );
 
 /**
  * Bezpečné zjištění aktuálního product ID v různých kontextech.
