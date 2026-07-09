@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: CX Product Badges
- * Description: Automaticky přidává tagy SLEVA a VYPRODÁNO podle stavu produktu + prioritní zobrazení
- * Version: 2.2.0
+ * Description: Automaticky přidává badge podle toho jaký má tag, automaticky přidáva tag "Sleva" a "Vyprodáno" podle stavu produktu. Umožňuje nastavit prioritu zobrazení badge pomocí metadat tagů.
+ * Version: 3.0.0
  * Author: Crystalex
  * Author URI: https://crystalex.com
  * License: GPL v2 or later
@@ -198,6 +198,18 @@ function crystalex_ensure_automatic_tag( $tag_name, $priority = 0 ) {
 }
 
 /**
+ * Zjistí, zda je automatické tagování pro daný typ badge zapnuté.
+ *
+ * @param string $type 'sleva' nebo 'vyprodano'.
+ * @return bool
+ */
+function crystalex_is_auto_tag_enabled( $type ) {
+	$option_name = 'crystalex_auto_tag_' . $type . '_enabled';
+	// Výchozí hodnota je zapnuto (zachování původního chování pluginu).
+	return (bool) get_option( $option_name, '1' );
+}
+
+/**
  * Automaticky spravuje tagy produktu podle stavu (SLEVA, VYPRODÁNO).
  * Volá se při uložení produktu.
  *
@@ -205,31 +217,36 @@ function crystalex_ensure_automatic_tag( $tag_name, $priority = 0 ) {
  */
 function crystalex_auto_manage_product_tags( $product_id ) {
 	$product = wc_get_product( $product_id );
-	
+
 	if ( ! $product ) {
 		return;
 	}
-	
+
 	// Získej aktuální tagy produktu
 	$current_tags = wp_get_post_terms( $product_id, 'product_tag', array( 'fields' => 'ids' ) );
 	if ( is_wp_error( $current_tags ) ) {
 		$current_tags = array();
 	}
-	
-	// Definice automatických tagů
-	$auto_tags = array(
-		'sleva' => array(
+
+	// Definice automatických tagů (pouze pokud je funkce v nastavení zapnutá)
+	$auto_tags = array();
+
+	if ( crystalex_is_auto_tag_enabled( 'sleva' ) ) {
+		$auto_tags['sleva'] = array(
 			'name' => __( 'Sleva', 'crystalex-badges' ),
 			'priority' => 80,
 			'condition' => $product->is_on_sale(),
-		),
-		'vyprodano' => array(
+		);
+	}
+
+	if ( crystalex_is_auto_tag_enabled( 'vyprodano' ) ) {
+		$auto_tags['vyprodano'] = array(
 			'name' => __( 'Vyprodáno', 'crystalex-badges' ),
 			'priority' => 30,
 			'condition' => ! $product->is_in_stock(),
-		),
-	);
-	
+		);
+	}
+
 	// Projdi automatické tagy a přidej/odeber je podle podmínek
 	foreach ( $auto_tags as $slug => $data ) {
 		$term_id = crystalex_ensure_automatic_tag( $data['name'], $data['priority'] );
@@ -314,7 +331,8 @@ function crystalex_admin_page() {
 	
 	$processed = 0;
 	$message = '';
-	
+	$settings_message = '';
+
 	if ( isset( $_POST['cx_process_products'] ) && check_admin_referer( 'cx_process_products' ) ) {
 		$processed = crystalex_process_all_products();
 		$message = sprintf(
@@ -322,17 +340,65 @@ function crystalex_admin_page() {
 			$processed
 		);
 	}
+
+	if ( isset( $_POST['cx_save_settings'] ) && check_admin_referer( 'cx_save_settings' ) ) {
+		update_option( 'crystalex_auto_tag_sleva_enabled', isset( $_POST['cx_auto_tag_sleva'] ) ? '1' : '0' );
+		update_option( 'crystalex_auto_tag_vyprodano_enabled', isset( $_POST['cx_auto_tag_vyprodano'] ) ? '1' : '0' );
+		$settings_message = __( 'Nastavení bylo uloženo.', 'crystalex-badges' );
+	}
+
+	$sleva_enabled = crystalex_is_auto_tag_enabled( 'sleva' );
+	$vyprodano_enabled = crystalex_is_auto_tag_enabled( 'vyprodano' );
 	?>
 	<div class="wrap">
 		<h1><?php esc_html_e( 'CX Product Badges - Aktualizace', 'crystalex-badges' ); ?></h1>
-		
+
 		<?php if ( $message ) : ?>
 			<div class="notice notice-success">
 				<p><?php echo esc_html( $message ); ?></p>
 			</div>
 		<?php endif; ?>
-		
+
+		<?php if ( $settings_message ) : ?>
+			<div class="notice notice-success">
+				<p><?php echo esc_html( $settings_message ); ?></p>
+			</div>
+		<?php endif; ?>
+
 		<div class="card">
+			<h2><?php esc_html_e( 'Nastavení automatického tagování', 'crystalex-badges' ); ?></h2>
+			<p><?php esc_html_e( 'Zde můžete samostatně zapnout nebo vypnout automatické přidávání badge podle stavu produktu.', 'crystalex-badges' ); ?></p>
+			<form method="post">
+				<?php wp_nonce_field( 'cx_save_settings' ); ?>
+				<table class="form-table">
+					<tr>
+						<th scope="row"><?php esc_html_e( 'Badge "Sleva"', 'crystalex-badges' ); ?></th>
+						<td>
+							<label>
+								<input type="checkbox" name="cx_auto_tag_sleva" value="1" <?php checked( $sleva_enabled ); ?>>
+								<?php esc_html_e( 'Automaticky přidávat/odebírat tag "Sleva" podle akční ceny produktu', 'crystalex-badges' ); ?>
+							</label>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php esc_html_e( 'Badge "Vyprodáno"', 'crystalex-badges' ); ?></th>
+						<td>
+							<label>
+								<input type="checkbox" name="cx_auto_tag_vyprodano" value="1" <?php checked( $vyprodano_enabled ); ?>>
+								<?php esc_html_e( 'Automaticky přidávat/odebírat tag "Vyprodáno" podle skladové dostupnosti', 'crystalex-badges' ); ?>
+							</label>
+						</td>
+					</tr>
+				</table>
+				<p>
+					<button type="submit" name="cx_save_settings" class="button button-primary">
+						<?php esc_html_e( 'Uložit nastavení', 'crystalex-badges' ); ?>
+					</button>
+				</p>
+			</form>
+		</div>
+
+		<div class="card" style="margin-top: 20px;">
 			<h2><?php esc_html_e( 'Hromadná aktualizace badge', 'crystalex-badges' ); ?></h2>
 			<p><?php esc_html_e( 'Kliknutím na tlačítko zpracujete všechny produkty a přidáte/odeberete automatické badge (Sleva, Vyprodáno) podle aktuálního stavu produktů.', 'crystalex-badges' ); ?></p>
 			<p><strong><?php esc_html_e( 'Použijte tuto funkci:', 'crystalex-badges' ); ?></strong></p>
@@ -359,6 +425,7 @@ function crystalex_admin_page() {
 						<th><?php esc_html_e( 'Badge', 'crystalex-badges' ); ?></th>
 						<th><?php esc_html_e( 'Podmínka', 'crystalex-badges' ); ?></th>
 						<th><?php esc_html_e( 'Priorita', 'crystalex-badges' ); ?></th>
+						<th><?php esc_html_e( 'Stav', 'crystalex-badges' ); ?></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -366,11 +433,13 @@ function crystalex_admin_page() {
 						<td><strong>Sleva</strong></td>
 						<td>Produkt má nastavenou akční cenu (sale price)</td>
 						<td>80</td>
+						<td><?php echo $sleva_enabled ? '<span style="color:green;">' . esc_html__( 'Zapnuto', 'crystalex-badges' ) . '</span>' : '<span style="color:red;">' . esc_html__( 'Vypnuto', 'crystalex-badges' ) . '</span>'; ?></td>
 					</tr>
 					<tr>
 						<td><strong>Vyprodáno</strong></td>
 						<td>Produkt není skladem (out of stock)</td>
 						<td>30</td>
+						<td><?php echo $vyprodano_enabled ? '<span style="color:green;">' . esc_html__( 'Zapnuto', 'crystalex-badges' ) . '</span>' : '<span style="color:red;">' . esc_html__( 'Vypnuto', 'crystalex-badges' ) . '</span>'; ?></td>
 					</tr>
 				</tbody>
 			</table>
@@ -453,10 +522,11 @@ function crystalex_get_product_badge_tags( $product_id ) {
  * ČISTÝ, NESTYLOVANÝ HTML VÝSTUP:
  *
  * <div class="crystalex-badges-wrapper">
- *   <span class="badge badge-slug">Název tagu</span>
+ *   <a href="url-k-tagu" class="badge badge-slug">Název tagu</a>
  * </div>
  *
  * ZOBRAZENÍ: Pouze 1 badge s nejvyšší prioritou (nastavitelnou v UI)
+ * Badge je klikatelný odkaz vedoucí na archiv všech produktů s daným tagem
  *
  * @param int $product_id Product ID.
  */
@@ -484,9 +554,16 @@ function crystalex_render_badges_for_product( $product_id ) {
 		return;
 	}
 
+	// Získej URL k archivu produktů s tímto tagem
+	$term_link = get_term_link( $top_badge->term_id, 'product_tag' );
+	if ( is_wp_error( $term_link ) ) {
+		$term_link = '#';
+	}
+
 	echo '<div class="crystalex-badges-wrapper">';
 	printf(
-		'<span class="badge badge-%1$s">%2$s</span>',
+		'<a href="%1$s" class="badge badge-%2$s">%3$s</a>',
+		esc_url( $term_link ),
 		esc_attr( $slug ),
 		esc_html( $name )
 	);

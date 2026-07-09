@@ -13,6 +13,8 @@ Plugin automaticky zobrazuje **pouze 1 badge s nejvyšší prioritou** podle tag
 - ✅ **Prioritní zobrazení** - zobrazí se pouze 1 badge s nejvyšší prioritou
 - ✅ **Nastavitelná priorita v UI** - každý tag má prioritu 0-999
 - ✅ **Automatické tagy** - SLEVA a VYPRODÁNO se přidávají/odebírají automaticky
+- ✅ **Samostatné zapnutí/vypnutí automatiky** - Sleva a Vyprodáno lze v administraci nezávisle na sobě vypnout
+- ✅ **Klikatelný badge** - badge vede na archiv produktů s daným tagem
 - ✅ **Čistý HTML výstup** - BEZ inline stylů, stylujte si badge podle sebe
 - ✅ **Bricks Builder kompatibilní** - shortcode `[cx_product_badges]`
 - ✅ **Plná podpora WPML překladů** - tagy i badge se automaticky překládají
@@ -72,6 +74,13 @@ Plugin automaticky přidává/odebírá tyto tagy:
 - ✅ Při uložení produktu v administraci
 - ✅ Při změně stavu skladu
 - ✅ Po kliknutí na "Zpracovat všechny produkty" v **CX Badge**
+
+### Zapnutí/vypnutí automatického tagování
+
+Automatické přidávání tagů "Sleva" a "Vyprodáno" lze v administraci **CX Badge → Nastavení automatického tagování** samostatně zapnout nebo vypnout:
+
+- Když je funkce pro daný tag **vypnutá**, plugin ho u produktů vůbec nespravuje - nepřidá ho ani neodebere. Tagy přiřazené ručně zůstávají zachovány.
+- Výchozí stav obou přepínačů je **zapnuto** (zachovává původní chování pluginu).
 
 ### Přidání vlastních tagů k produktům
 
@@ -286,6 +295,8 @@ Tlačítko projde všechny produkty a přidá/odebere automatické tagy SLEVA a 
 - ✅ Při změně stavu skladu (`woocommerce_product_set_stock_status`)
 - ✅ Manuálně přes admin rozhraní
 
+**Zapnutí/vypnutí:** každý typ (Sleva/Vyprodáno) lze nezávisle vypnout v **CX Badge → Nastavení automatického tagování** (ukládá se jako WP options `crystalex_auto_tag_sleva_enabled` / `crystalex_auto_tag_vyprodano_enabled`).
+
 ### WooCommerce Hooky
 
 Plugin používá tyto hooky pro zobrazení:
@@ -463,19 +474,22 @@ Plugin vytvořen pro Crystalex s použitím moderních WordPress a WooCommerce s
 
 ---
 
-## 📌 Rychlý přehled (Verze 2.2.0)
+## 📌 Rychlý přehled (Verze 3.0.0)
 
 | Vlastnost | Popis |
 |-----------|-------|
-| **Zobrazení** | Pouze 1 badge s nejvyšší prioritou |
+| **Zobrazení** | Pouze 1 badge s nejvyšší prioritou, klikatelný na archiv tagu |
 | **Priorita** | 0-999, nastavitelná v UI u každého tagu |
 | **Automatické tagy** | SLEVA (priorita 80), VYPRODÁNO (priorita 30) |
+| **Zapnutí/vypnutí automatiky** | Sleva a Vyprodáno lze nezávisle vypnout v administraci |
 | **Admin rozhraní** | CX Badge v hlavním menu |
 | **Hromadné zpracování** | Tlačítko pro aktualizaci všech produktů |
 | **Bricks Builder** | Shortcode `[cx_product_badges]` |
 | **WPML** | Plná podpora překladů |
 | **HTML výstup** | Čistý, bez inline stylů |
 | **Kompatibilita** | WordPress 6.0+, WooCommerce 7.0+, PHP 7.4+ |
+
+📄 Kompletní historie změn: [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
