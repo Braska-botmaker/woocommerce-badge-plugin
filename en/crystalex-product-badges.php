@@ -339,7 +339,7 @@ function crystalex_admin_page() {
 
 	if ( isset( $_POST['cx_process_products'] ) && check_admin_referer( 'cx_process_products' ) ) {
 		$processed = crystalex_process_all_products();
-		$message = sprintf(
+		$message   = sprintf(
 			/* translators: %d: number of products processed. */
 			__( 'Processed %d products! Automatic badges (Sale, Out of stock) have been updated.', 'crystalex-badges' ),
 			$processed
