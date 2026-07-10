@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    name: PHP lint & coding standards
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: ['7.4', '8.0', '8.3']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up PHP ${{ matrix.php-version }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          coverage: none
+          tools: composer
+
+      - name: Syntax-check CZ plugin
+        run: php -l cz/crystalex-product-badges.php
+
+      - name: Syntax-check EN plugin
+        run: php -l en/crystalex-product-badges.php
+
+      - name: Install Composer dependencies
+        if: matrix.php-version == '8.3'
+        run: composer install --no-progress --prefer-dist
+
+      - name: Run WordPress Coding Standards (PHPCS)
+        if: matrix.php-version == '8.3'
+        run: composer run lint

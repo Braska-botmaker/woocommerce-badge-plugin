@@ -1,0 +1,20 @@
+# Dependencies
+/vendor/
+/node_modules/
+
+# Build / release artifacts
+*.zip
+/dist/
+/build/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# PHPCS cache
+.phpcs-cache
+.phpunit.result.cache

@@ -3,8 +3,8 @@
  * Plugin Name: CX Product Badges
  * Description: Automaticky přidává badge podle toho jaký má tag, automaticky přidáva tag "Sleva" a "Vyprodáno" podle stavu produktu. Umožňuje nastavit prioritu zobrazení badge pomocí metadat tagů.
  * Version: 3.0.0
- * Author: Crystalex
- * Author URI: https://crystalex.com
+ * Author: Matěj Horák
+ * Author URI: https://crystalexcz.com
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: crystalex-badges
@@ -433,13 +433,25 @@ function crystalex_admin_page() {
 						<td><strong>Sleva</strong></td>
 						<td>Produkt má nastavenou akční cenu (sale price)</td>
 						<td>80</td>
-						<td><?php echo $sleva_enabled ? '<span style="color:green;">' . esc_html__( 'Zapnuto', 'crystalex-badges' ) . '</span>' : '<span style="color:red;">' . esc_html__( 'Vypnuto', 'crystalex-badges' ) . '</span>'; ?></td>
+						<td>
+							<?php if ( $sleva_enabled ) : ?>
+								<span style="color:green;"><?php esc_html_e( 'Zapnuto', 'crystalex-badges' ); ?></span>
+							<?php else : ?>
+								<span style="color:red;"><?php esc_html_e( 'Vypnuto', 'crystalex-badges' ); ?></span>
+							<?php endif; ?>
+						</td>
 					</tr>
 					<tr>
 						<td><strong>Vyprodáno</strong></td>
 						<td>Produkt není skladem (out of stock)</td>
 						<td>30</td>
-						<td><?php echo $vyprodano_enabled ? '<span style="color:green;">' . esc_html__( 'Zapnuto', 'crystalex-badges' ) . '</span>' : '<span style="color:red;">' . esc_html__( 'Vypnuto', 'crystalex-badges' ) . '</span>'; ?></td>
+						<td>
+							<?php if ( $vyprodano_enabled ) : ?>
+								<span style="color:green;"><?php esc_html_e( 'Zapnuto', 'crystalex-badges' ); ?></span>
+							<?php else : ?>
+								<span style="color:red;"><?php esc_html_e( 'Vypnuto', 'crystalex-badges' ); ?></span>
+							<?php endif; ?>
+						</td>
 					</tr>
 				</tbody>
 			</table>

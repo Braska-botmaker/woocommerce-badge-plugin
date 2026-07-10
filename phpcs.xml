@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<ruleset name="CX Product Badges">
+    <description>Coding standard for the CX Product Badges plugin (cz/ and en/ variants).</description>
+
+    <file>./cz</file>
+    <file>./en</file>
+
+    <arg value="sp"/>
+    <arg name="colors"/>
+    <arg name="extensions" value="php"/>
+    <arg name="parallel" value="8"/>
+
+    <config name="testVersion" value="7.4-"/>
+
+    <rule ref="WordPress-Extra">
+        <!-- The plugin intentionally ships as a single flat file per variant, not folder-per-slug. -->
+        <exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
+        <exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+        <!-- Yoda conditions are a stylistic choice the existing, reviewed codebase deliberately does not follow. -->
+        <exclude name="WordPress.PHP.YodaConditions"/>
+    </rule>
+
+    <rule ref="WordPress.WP.I18n">
+        <properties>
+            <property name="text_domain" type="array">
+                <element value="crystalex-badges"/>
+            </property>
+        </properties>
+    </rule>
+
+    <rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+        <properties>
+            <property name="prefixes" type="array">
+                <element value="crystalex"/>
+                <element value="cx"/>
+            </property>
+        </properties>
+    </rule>
+
+    <rule ref="PHPCompatibilityWP"/>
+</ruleset>

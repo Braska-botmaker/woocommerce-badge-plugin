@@ -1,0 +1,105 @@
+/*
+ * CX Product Badges - Example CSS for Bricks Builder
+ *
+ * USAGE IN BRICKS:
+ * 1. Bricks -> Settings -> Custom Code -> CSS
+ * 2. Copy this code
+ * 3. Adjust colors/sizes as needed
+ *
+ * IMPORTANT:
+ * - The plugin renders ONLY clean HTML
+ * - This CSS defines the visual style of the badges
+ * - %root% is the Bricks specificity prefix
+ */
+
+/* ===== BADGE WRAPPER ===== */
+%root% .crystalex-badges-wrapper {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  margin-bottom: 12px !important;
+}
+
+/* ===== BASE STYLE FOR ALL BADGES ===== */
+%root% .crystalex-badges-wrapper .badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  /* Vertical centering */
+  line-height: 1 !important;
+  padding: 6px 12px 7px !important;
+
+  /* Typography */
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+
+  /* Colors (default gray) */
+  color: #fff !important;
+  background-color: rgba(0, 0, 0, 0.88) !important;
+
+  /* Borders and shape */
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border-radius: 999px !important; /* Pill shape */
+
+  /* Other */
+  white-space: nowrap !important;
+  text-decoration: none !important;
+  transform: translateZ(0) !important;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.4) !important;
+}
+
+/* ===== TAG-SPECIFIC COLORS ===== */
+
+/* Tag: New */
+%root% .badge-new {
+  background-color: #4CAF50 !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Tag: Sale */
+%root% .badge-sale {
+  background-color: #FF5722 !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Tag: Bestseller */
+%root% .badge-bestseller {
+  background-color: #2196F3 !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Tag: Limited / Limited edition */
+%root% .badge-limited,
+%root% .badge-limited-edition {
+  background-color: #FF9800 !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #000 !important;
+  text-shadow: 0 1px 1px rgba(255,255,255,0.3) !important;
+}
+
+/* Tag: Exclusive */
+%root% .badge-exclusive {
+  background-color: #9C27B0 !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Tag: Handmade */
+%root% .badge-handmade {
+  background-color: #D32F2F !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/*
+ * NOTE:
+ * To add more colors, use this pattern:
+ *
+ * %root% .badge-{tag-slug} {
+ *   background-color: #COLOR !important;
+ *   border-color: rgba(255, 255, 255, 0.2) !important;
+ * }
+ *
+ * You can find a tag's slug under: Products -> Tags
+ */
