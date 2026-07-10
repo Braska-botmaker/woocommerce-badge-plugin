@@ -16,7 +16,7 @@ The plugin displays **only the single highest-priority badge** based on a produc
 - **Configurable priority in the UI** — every tag has a priority from 0–999
 - **Automatic tags** — `Sale` and `Out of stock` are added/removed automatically
 - **Independent on/off switches** — Sale and Out-of-stock automation can be toggled independently in the admin
-- **Clickable badge** — on the single product page and via the shortcode, the badge links to the archive of products with that tag; on product listings (shop/archive) it renders as a non-linked `<span>` instead, since the default WooCommerce template already wraps the whole product card in its own link and a nested `<a>` would break it
+- **Never a link** — the badge always renders as a non-linked `<span>` (never an `<a>`), on the archive, the single product page, and via the shortcode. This is intentional: it avoids nesting a link inside the link that already wraps the product card, which would break click-through
 - **Clean HTML output** — no inline styles, style the badge however you like
 - **Bricks Builder compatible** — `[cx_product_badges]` shortcode
 - **Full WPML translation support** — tags and badges are translated automatically
@@ -115,7 +115,7 @@ A product has these tags:
 **HTML output:**
 ```html
 <div class="crystalex-badges-wrapper">
-    <a href="/product-tag/promo/" class="badge badge-promo">PROMO</a>
+    <span class="badge badge-promo">PROMO</span>
 </div>
 ```
 
@@ -128,16 +128,9 @@ A product has these tags:
 
 ## Styling
 
-**IMPORTANT:** The plugin renders **clean HTML with no inline styles whatsoever**.
+**IMPORTANT:** The plugin renders **clean HTML with no inline styles whatsoever**. The badge is always a non-linked `<span>`, never an `<a>` — see [Technical details](#technical-details).
 
-On the single product page and via the shortcode, the output is a clickable link:
-```html
-<div class="crystalex-badges-wrapper">
-    <a href="/product-tag/new/" class="badge badge-new">New</a>
-</div>
-```
-
-On product listings (shop/archive) the badge is a non-linked `<span>` instead (see [Technical details](#technical-details)):
+Output looks like this:
 ```html
 <div class="crystalex-badges-wrapper">
     <span class="badge badge-new">New</span>
@@ -228,9 +221,9 @@ WPML automatically translates tag names, so badges render in the current page's 
 
 ### Automatic display
 
-- On the English site: `<a class="badge badge-new">New</a>`
-- On the Czech site: `<a class="badge badge-novinka">Novinka</a>`
-- On the German site: `<a class="badge badge-neuheit">Neuheit</a>`
+- On the English site: `<span class="badge badge-new">New</span>`
+- On the Czech site: `<span class="badge badge-novinka">Novinka</span>`
+- On the German site: `<span class="badge badge-neuheit">Neuheit</span>`
 
 **WPML handles everything automatically — no extra configuration required.**
 
@@ -292,13 +285,11 @@ The button walks every product and adds/removes the automatic `Sale` and `Out of
 - Priority range: 0–999 (higher = more important)
 - Configurable in the UI per tag
 
-### Link vs. span, by placement
+### The badge is never a link
 
-| Placement | Element | Why |
-| --- | --- | --- |
-| Product listings (shop/archive/category) | `<span>` (not a link) | The default WooCommerce template wraps the entire product card in a single `<a>` here. Nesting another `<a>` inside it is invalid HTML — the browser would close the outer link early and break the product card's click-through. |
-| Single product page | `<a>` (clickable, links to the tag archive) | No wrapping link exists here. |
-| `[cx_product_badges]` shortcode | `<a>` (clickable, links to the tag archive) | Placement is entirely up to whoever inserts the shortcode (e.g. in Bricks Builder). |
+The badge **always** renders as a non-linked `<span>` — on product listings, the single product page, and via the shortcode. It is never an `<a>`.
+
+Why: on product listings (shop/archive/category), the default WooCommerce template wraps the entire product card in a single `<a>`. If the badge were also a link, it would nest an `<a>` inside that `<a>`, which is invalid HTML — the browser would close the outer link early and break the product card's click-through. To keep behavior identical and safe everywhere, the badge never links, on any placement.
 
 ### Automatic tags
 
@@ -492,7 +483,7 @@ Built by [Matěj Horák](https://crystalexcz.com), originally developed for the 
 
 | Feature                  | Description                                                        |
 |---------------------------|----------------------------------------------------------------------|
-| **Display**               | Only the single highest-priority badge, clickable to the tag archive |
+| **Display**               | Only the single highest-priority badge, always a non-linked `<span>` |
 | **Priority**               | 0–999, configurable in the UI per tag                                |
 | **Automatic tags**         | Sale (priority 80), Out of stock (priority 30)                       |
 | **Automation on/off**      | Sale and Out-of-stock can be toggled independently                   |

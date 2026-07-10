@@ -2,7 +2,7 @@
 /**
  * Plugin Name: CX Product Badges
  * Description: Automaticky přidává badge podle toho jaký má tag, automaticky přidáva tag "Sleva" a "Vyprodáno" podle stavu produktu. Umožňuje nastavit prioritu zobrazení badge pomocí metadat tagů.
- * Version: 3.0.1
+ * Version: 3.0.2
  * Author: Matěj Horák
  * Author URI: https://crystalexcz.com
  * License: GPL v2 or later
@@ -540,22 +540,18 @@ function crystalex_get_product_badge_tags( $product_id ) {
 /**
  * Vykreslí HTML badge pro daný produkt.
  * ČISTÝ, NESTYLOVANÝ HTML VÝSTUP: div.crystalex-badges-wrapper obalující jeden
- * odkaz nebo span s třídami "badge badge-{slug}" a názvem tagu jako textem.
+ * span s třídami "badge badge-{slug}" a názvem tagu jako textem.
  *
  * ZOBRAZENÍ: Pouze 1 badge s nejvyšší prioritou (nastavitelnou v UI)
- * Badge je klikatelný odkaz vedoucí na archiv všech produktů s daným tagem
- * – ALE pouze pokud je bezpečné odkaz vykreslit, viz $as_link níže.
+ * Badge NIKDY není odkaz (žádný <a>) - úmyslně. Na výpisu produktů se
+ * vykresluje uvnitř odkazu, kterým WooCommerce šablona obaluje celou
+ * dlaždici produktu, a vnořený <a> uvnitř <a> je neplatné HTML, které tenhle
+ * vnější odkaz rozbíjí. Aby bylo chování všude stejné a bezpečné, je badge
+ * vždy jen <span> - na archivu, na detailu produktu i přes shortcode.
  *
- * @param int  $product_id Product ID.
- * @param bool $as_link    Vykreslit badge jako klikatelný <a>? Na výpisu produktů
- *                          (shop/archiv) obaluje výchozí WooCommerce šablona celou
- *                          dlaždici produktu (thumbnail + titulek) jedním <a>, a tento
- *                          hook se spouští uvnitř něj – vnořený <a> je neplatné HTML
- *                          a prohlížeč kvůli němu předčasně uzavře ten vnější odkaz,
- *                          čímž se produkt stane neproklikatelným. Proto se tam badge
- *                          musí vykreslit jako neklikatelný <span>.
+ * @param int $product_id Product ID.
  */
-function crystalex_render_badges_for_product( $product_id, $as_link = true ) {
+function crystalex_render_badges_for_product( $product_id ) {
 	$product_id = (int) $product_id;
 
 	if ( ! $product_id ) {
@@ -580,38 +576,19 @@ function crystalex_render_badges_for_product( $product_id, $as_link = true ) {
 	}
 
 	echo '<div class="crystalex-badges-wrapper">';
-
-	if ( $as_link ) {
-		// Získej URL k archivu produktů s tímto tagem.
-		$term_link = get_term_link( $top_badge->term_id, 'product_tag' );
-		if ( is_wp_error( $term_link ) ) {
-			$term_link = '#';
-		}
-
-		printf(
-			'<a href="%1$s" class="badge badge-%2$s">%3$s</a>',
-			esc_url( $term_link ),
-			esc_attr( $slug ),
-			esc_html( $name )
-		);
-	} else {
-		printf(
-			'<span class="badge badge-%1$s">%2$s</span>',
-			esc_attr( $slug ),
-			esc_html( $name )
-		);
-	}
-
+	printf(
+		'<span class="badge badge-%1$s">%2$s</span>',
+		esc_attr( $slug ),
+		esc_html( $name )
+	);
 	echo '</div>';
 }
 
 /**
  * Hook varianta – pro klasické WooCommerce templaty.
  * Zamezí vícenásobnému renderu pro stejný produkt v jednom requestu.
- *
- * @param bool $as_link Předá se do crystalex_render_badges_for_product() – viz tam.
  */
-function crystalex_render_badges_action( $as_link = true ) {
+function crystalex_render_badges_action() {
 	if ( ! crystalex_check_woocommerce() ) {
 		return;
 	}
@@ -631,26 +608,14 @@ function crystalex_render_badges_action( $as_link = true ) {
 
 	$rendered[ $product_id ] = true;
 
-	crystalex_render_badges_for_product( $product_id, $as_link );
+	crystalex_render_badges_for_product( $product_id );
 }
 
-/**
- * ARCHIV / SHOP – před titlem produktu. Výchozí WooCommerce šablona zde celou
- * dlaždici produktu obaluje jedním <a>, proto se badge vykreslí neklikatelně.
- */
-function crystalex_render_badges_action_archive() {
-	crystalex_render_badges_action( false );
-}
-add_action( 'woocommerce_before_shop_loop_item_title', 'crystalex_render_badges_action_archive', 10 );
+// ARCHIV / SHOP – před titlem produktu.
+add_action( 'woocommerce_before_shop_loop_item_title', 'crystalex_render_badges_action', 10 );
 
-/**
- * SINGLE PRODUCT – nad summary (nad názvem). Zde žádný obalový odkaz není,
- * takže badge může být bezpečně klikatelný.
- */
-function crystalex_render_badges_action_single() {
-	crystalex_render_badges_action( true );
-}
-add_action( 'woocommerce_before_single_product_summary', 'crystalex_render_badges_action_single', 5 );
+// SINGLE PRODUCT – nad summary (nad názvem).
+add_action( 'woocommerce_before_single_product_summary', 'crystalex_render_badges_action', 5 );
 
 /**
  * Shortcode pro použití v Bricksu (a kdekoliv jinde):
