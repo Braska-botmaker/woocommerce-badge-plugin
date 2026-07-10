@@ -4,6 +4,13 @@ All notable changes to this plugin are documented in this file. The Czech (`cz/`
 
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [3.0.1] - 2026-07-10
+
+### Fixed
+
+- The badge on product listings (shop, archive, category pages) is no longer rendered as an `<a>` link. The default WooCommerce template wraps the entire product card in a single `<a>` at the point where this plugin renders, so a second, nested `<a>` was invalid HTML — the browser closed the outer product link early, which could make part of the product card (image/title) unclickable. The badge now renders as a plain, non-linked `<span>` there.
+- The badge remains a clickable `<a>` link to the tag archive on the single product page (no wrapping link exists there) and when rendered via the `[cx_product_badges]` shortcode.
+
 ## [3.0.0] - 2026-07-09
 
 ### Added

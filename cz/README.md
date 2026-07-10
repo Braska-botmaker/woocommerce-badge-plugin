@@ -16,7 +16,7 @@ Plugin automaticky zobrazuje **pouze 1 badge s nejvyšší prioritou** podle tag
 - ✅ **Nastavitelná priorita v UI** - každý tag má prioritu 0-999
 - ✅ **Automatické tagy** - SLEVA a VYPRODÁNO se přidávají/odebírají automaticky
 - ✅ **Samostatné zapnutí/vypnutí automatiky** - Sleva a Vyprodáno lze v administraci nezávisle na sobě vypnout
-- ✅ **Klikatelný badge** - badge vede na archiv produktů s daným tagem
+- ✅ **Klikatelný badge** - na detailu produktu a přes shortcode vede badge na archiv produktů s daným tagem; na výpisu produktů (shop/archiv) se vykreslí jako neklikatelný `<span>`, protože tam už celou dlaždici produktu obaluje vlastní odkaz šablony a vnořený `<a>` by ho rozbil
 - ✅ **Čistý HTML výstup** - BEZ inline stylů, stylujte si badge podle sebe
 - ✅ **Bricks Builder kompatibilní** - shortcode `[cx_product_badges]`
 - ✅ **Plná podpora WPML překladů** - tagy i badge se automaticky překládají
@@ -130,16 +130,23 @@ Produkt má tyto tagy:
 
 **DŮLEŽITÉ:** Plugin vykresluje **čistý HTML bez jakýchkoliv inline stylů**!
 
-Výstup vypadá takto:
+Na detailu produktu a přes shortcode je výstup klikatelný odkaz:
 ```html
 <div class="crystalex-badges-wrapper">
     <a href="/produkt-stitek/novinka/" class="badge badge-novinka">Novinka</a>
 </div>
 ```
 
+Na výpisu produktů (shop/archiv) je badge neklikatelný `<span>` (viz [🔌 Technické detaily](#-technické-detaily)):
+```html
+<div class="crystalex-badges-wrapper">
+    <span class="badge badge-novinka">Novinka</span>
+</div>
+```
+
 ### CSS třídy pro stylování
 
-Každá badge má tyto CSS třídy:
+Každá badge má tyto CSS třídy - ať už se vykreslí jako `<a>` nebo `<span>`:
 - `.crystalex-badges-wrapper` - obal všech badge
 - `.badge` - společná třída pro všechny badge
 - `.badge-{slug}` - specifická třída podle slugu tagu (např. `.badge-novinka`, `.badge-akce`)
@@ -284,6 +291,14 @@ Tlačítko projde všechny produkty a přidá/odebere automatické tagy SLEVA a 
 - Zobrazuje se **pouze 1 badge** - ten s nejvyšší prioritou
 - Priorita: 0-999 (čím vyšší, tím důležitější)
 - Nastavitelná v UI u každého tagu
+
+### Klikatelnost badge podle umístění
+
+| Umístění | Element | Proč |
+|---|---|---|
+| Výpis produktů (shop/archiv/kategorie) | `<span>` (neklikatelný) | Výchozí WooCommerce šablona zde celou dlaždici produktu obaluje jedním `<a>`. Vnořený `<a>` uvnitř `<a>` je neplatné HTML - prohlížeč by ten vnější odkaz předčasně uzavřel a produkt by nešel proklikat. |
+| Detail produktu | `<a>` (klikatelný, vede na archiv tagu) | Žádný obalový odkaz zde není. |
+| Shortcode `[cx_product_badges]` | `<a>` (klikatelný, vede na archiv tagu) | Umístění je plně pod kontrolou toho, kdo shortcode vkládá (např. v Bricks Builderu). |
 
 ### Automatické tagy
 
@@ -448,7 +463,7 @@ add_action( 'woocommerce_before_shop_loop_item_title', 'crystalex_render_badges_
 add_action( 'woocommerce_before_single_product_summary', 'crystalex_render_badges_action', 5 );
 
 // Shortcode
-add_shortcode( 'cx_product_badges', 'cx_product_badges_shortcode' );
+add_shortcode( 'cx_product_badges', 'crystalex_product_badges_shortcode' );
 ```
 
 ## 📄 Licence

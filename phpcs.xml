@@ -18,6 +18,8 @@
         <exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
         <!-- Yoda conditions are a stylistic choice the existing, reviewed codebase deliberately does not follow. -->
         <exclude name="WordPress.PHP.YodaConditions"/>
+        <!-- Hook/shortcode callbacks routinely receive parameters (e.g. $atts) they don't use, by WP's own API design. -->
+        <exclude name="Generic.CodeAnalysis.UnusedFunctionParameter"/>
     </rule>
 
     <rule ref="WordPress.WP.I18n">
@@ -32,7 +34,15 @@
         <properties>
             <property name="prefixes" type="array">
                 <element value="crystalex"/>
-                <element value="cx"/>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- manage_woocommerce is a real capability registered by WooCommerce; PHPCS can't see it without this hint. -->
+    <rule ref="WordPress.WP.Capabilities">
+        <properties>
+            <property name="custom_capabilities" type="array">
+                <element value="manage_woocommerce"/>
             </property>
         </properties>
     </rule>

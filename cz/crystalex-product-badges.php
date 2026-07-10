@@ -2,7 +2,7 @@
 /**
  * Plugin Name: CX Product Badges
  * Description: Automaticky přidává badge podle toho jaký má tag, automaticky přidáva tag "Sleva" a "Vyprodáno" podle stavu produktu. Umožňuje nastavit prioritu zobrazení badge pomocí metadat tagů.
- * Version: 3.0.0
+ * Version: 3.0.1
  * Author: Matěj Horák
  * Author URI: https://crystalexcz.com
  * License: GPL v2 or later
@@ -114,10 +114,12 @@ add_action( 'product_tag_edit_form_fields', 'crystalex_add_tag_priority_field_ed
  * @param int $term_id Term ID.
  */
 function crystalex_save_tag_priority_create( $term_id ) {
+	// phpcs:disable WordPress.Security.NonceVerification.Missing -- spouští se pouze z formuláře "přidat štítek", který má vlastní nonce ověřovaný jádrem WP.
 	if ( isset( $_POST['tag_priority'] ) ) {
 		$priority = (int) $_POST['tag_priority'];
 		update_term_meta( $term_id, 'badge_priority', $priority );
 	}
+	// phpcs:enable WordPress.Security.NonceVerification.Missing
 }
 add_action( 'created_product_tag', 'crystalex_save_tag_priority_create' );
 
@@ -127,10 +129,12 @@ add_action( 'created_product_tag', 'crystalex_save_tag_priority_create' );
  * @param int $term_id Term ID.
  */
 function crystalex_save_tag_priority_edit( $term_id ) {
+	// phpcs:disable WordPress.Security.NonceVerification.Missing -- spouští se pouze z formuláře "upravit štítek", který má vlastní nonce ověřovaný jádrem WP.
 	if ( isset( $_POST['tag_priority'] ) ) {
 		$priority = (int) $_POST['tag_priority'];
 		update_term_meta( $term_id, 'badge_priority', $priority );
 	}
+	// phpcs:enable WordPress.Security.NonceVerification.Missing
 }
 add_action( 'edited_product_tag', 'crystalex_save_tag_priority_edit' );
 
@@ -174,7 +178,7 @@ add_filter( 'manage_product_tag_custom_column', 'crystalex_display_priority_colu
 function crystalex_ensure_automatic_tag( $tag_name, $priority = 0 ) {
 	// Zkontroluj, jestli tag existuje
 	$term = get_term_by( 'name', $tag_name, 'product_tag' );
-	
+
 	if ( $term ) {
 		// Tag existuje - aktualizuj prioritu, pokud není nastavená
 		$existing_priority = get_term_meta( $term->term_id, 'badge_priority', true );
@@ -183,17 +187,17 @@ function crystalex_ensure_automatic_tag( $tag_name, $priority = 0 ) {
 		}
 		return $term->term_id;
 	}
-	
+
 	// Tag neexistuje - vytvoř ho
 	$result = wp_insert_term( $tag_name, 'product_tag' );
-	
+
 	if ( is_wp_error( $result ) ) {
 		return $result;
 	}
-	
+
 	$term_id = $result['term_id'];
 	update_term_meta( $term_id, 'badge_priority', $priority );
-	
+
 	return $term_id;
 }
 
@@ -233,16 +237,16 @@ function crystalex_auto_manage_product_tags( $product_id ) {
 
 	if ( crystalex_is_auto_tag_enabled( 'sleva' ) ) {
 		$auto_tags['sleva'] = array(
-			'name' => __( 'Sleva', 'crystalex-badges' ),
-			'priority' => 80,
+			'name'      => __( 'Sleva', 'crystalex-badges' ),
+			'priority'  => 80,
 			'condition' => $product->is_on_sale(),
 		);
 	}
 
 	if ( crystalex_is_auto_tag_enabled( 'vyprodano' ) ) {
 		$auto_tags['vyprodano'] = array(
-			'name' => __( 'Vyprodáno', 'crystalex-badges' ),
-			'priority' => 30,
+			'name'      => __( 'Vyprodáno', 'crystalex-badges' ),
+			'priority'  => 30,
 			'condition' => ! $product->is_in_stock(),
 		);
 	}
@@ -250,13 +254,13 @@ function crystalex_auto_manage_product_tags( $product_id ) {
 	// Projdi automatické tagy a přidej/odeber je podle podmínek
 	foreach ( $auto_tags as $slug => $data ) {
 		$term_id = crystalex_ensure_automatic_tag( $data['name'], $data['priority'] );
-		
+
 		if ( is_wp_error( $term_id ) ) {
 			continue;
 		}
-		
+
 		$has_tag = in_array( $term_id, $current_tags, true );
-		
+
 		if ( $data['condition'] && ! $has_tag ) {
 			// Podmínka splněna, tag nemá -> přidej
 			$current_tags[] = $term_id;
@@ -265,7 +269,7 @@ function crystalex_auto_manage_product_tags( $product_id ) {
 			$current_tags = array_diff( $current_tags, array( $term_id ) );
 		}
 	}
-	
+
 	// Aktualizuj tagy produktu
 	wp_set_object_terms( $product_id, array_map( 'intval', $current_tags ), 'product_tag' );
 }
@@ -279,18 +283,18 @@ add_action( 'woocommerce_product_set_stock_status', 'crystalex_auto_manage_produ
  */
 function crystalex_process_all_products() {
 	$args = array(
-		'post_type' => 'product',
+		'post_type'      => 'product',
 		'posts_per_page' => -1,
-		'post_status' => 'publish',
-		'fields' => 'ids',
+		'post_status'    => 'publish',
+		'fields'         => 'ids',
 	);
-	
+
 	$product_ids = get_posts( $args );
-	
+
 	foreach ( $product_ids as $product_id ) {
 		crystalex_auto_manage_product_tags( $product_id );
 	}
-	
+
 	return count( $product_ids );
 }
 
@@ -307,7 +311,7 @@ function crystalex_add_admin_menu() {
 		'cx-update-badges',
 		'crystalex_admin_page'
 	);
-	
+
 	// Přidej i jako samostatnou položku v hlavním menu (pro jistotu)
 	add_menu_page(
 		__( 'CX Badge', 'crystalex-badges' ),
@@ -328,13 +332,14 @@ function crystalex_admin_page() {
 	if ( ! current_user_can( 'manage_woocommerce' ) ) {
 		return;
 	}
-	
-	$processed = 0;
-	$message = '';
+
+	$processed        = 0;
+	$message          = '';
 	$settings_message = '';
 
 	if ( isset( $_POST['cx_process_products'] ) && check_admin_referer( 'cx_process_products' ) ) {
 		$processed = crystalex_process_all_products();
+		/* translators: %d: number of products processed. */
 		$message = sprintf(
 			__( 'Zpracováno %d produktů! Automatické badge (Sleva, Vyprodáno) byly aktualizovány.', 'crystalex-badges' ),
 			$processed
@@ -347,7 +352,7 @@ function crystalex_admin_page() {
 		$settings_message = __( 'Nastavení bylo uloženo.', 'crystalex-badges' );
 	}
 
-	$sleva_enabled = crystalex_is_auto_tag_enabled( 'sleva' );
+	$sleva_enabled     = crystalex_is_auto_tag_enabled( 'sleva' );
 	$vyprodano_enabled = crystalex_is_auto_tag_enabled( 'vyprodano' );
 	?>
 	<div class="wrap">
@@ -416,7 +421,7 @@ function crystalex_admin_page() {
 				</p>
 			</form>
 		</div>
-		
+
 		<div class="card" style="margin-top: 20px;">
 			<h2><?php esc_html_e( 'Automatické badge', 'crystalex-badges' ); ?></h2>
 			<table class="widefat">
@@ -515,7 +520,7 @@ function crystalex_get_product_badge_tags( $product_id ) {
 
 	// Přidej prioritu k jednotlivým tagům
 	foreach ( $terms as $term ) {
-		$priority = get_term_meta( $term->term_id, 'badge_priority', true );
+		$priority       = get_term_meta( $term->term_id, 'badge_priority', true );
 		$term->priority = $priority !== '' ? (int) $priority : 0;
 	}
 
@@ -531,18 +536,23 @@ function crystalex_get_product_badge_tags( $product_id ) {
 
 /**
  * Vykreslí HTML badge pro daný produkt.
- * ČISTÝ, NESTYLOVANÝ HTML VÝSTUP:
- *
- * <div class="crystalex-badges-wrapper">
- *   <a href="url-k-tagu" class="badge badge-slug">Název tagu</a>
- * </div>
+ * ČISTÝ, NESTYLOVANÝ HTML VÝSTUP: div.crystalex-badges-wrapper obalující jeden
+ * odkaz nebo span s třídami "badge badge-{slug}" a názvem tagu jako textem.
  *
  * ZOBRAZENÍ: Pouze 1 badge s nejvyšší prioritou (nastavitelnou v UI)
  * Badge je klikatelný odkaz vedoucí na archiv všech produktů s daným tagem
+ * – ALE pouze pokud je bezpečné odkaz vykreslit, viz $as_link níže.
  *
- * @param int $product_id Product ID.
+ * @param int  $product_id Product ID.
+ * @param bool $as_link    Vykreslit badge jako klikatelný <a>? Na výpisu produktů
+ *                          (shop/archiv) obaluje výchozí WooCommerce šablona celou
+ *                          dlaždici produktu (thumbnail + titulek) jedním <a>, a tento
+ *                          hook se spouští uvnitř něj – vnořený <a> je neplatné HTML
+ *                          a prohlížeč kvůli němu předčasně uzavře ten vnější odkaz,
+ *                          čímž se produkt stane neproklikatelným. Proto se tam badge
+ *                          musí vykreslit jako neklikatelný <span>.
  */
-function crystalex_render_badges_for_product( $product_id ) {
+function crystalex_render_badges_for_product( $product_id, $as_link = true ) {
 	$product_id = (int) $product_id;
 
 	if ( ! $product_id ) {
@@ -566,27 +576,39 @@ function crystalex_render_badges_for_product( $product_id ) {
 		return;
 	}
 
-	// Získej URL k archivu produktů s tímto tagem
-	$term_link = get_term_link( $top_badge->term_id, 'product_tag' );
-	if ( is_wp_error( $term_link ) ) {
-		$term_link = '#';
+	echo '<div class="crystalex-badges-wrapper">';
+
+	if ( $as_link ) {
+		// Získej URL k archivu produktů s tímto tagem.
+		$term_link = get_term_link( $top_badge->term_id, 'product_tag' );
+		if ( is_wp_error( $term_link ) ) {
+			$term_link = '#';
+		}
+
+		printf(
+			'<a href="%1$s" class="badge badge-%2$s">%3$s</a>',
+			esc_url( $term_link ),
+			esc_attr( $slug ),
+			esc_html( $name )
+		);
+	} else {
+		printf(
+			'<span class="badge badge-%1$s">%2$s</span>',
+			esc_attr( $slug ),
+			esc_html( $name )
+		);
 	}
 
-	echo '<div class="crystalex-badges-wrapper">';
-	printf(
-		'<a href="%1$s" class="badge badge-%2$s">%3$s</a>',
-		esc_url( $term_link ),
-		esc_attr( $slug ),
-		esc_html( $name )
-	);
 	echo '</div>';
 }
 
 /**
  * Hook varianta – pro klasické WooCommerce templaty.
  * Zamezí vícenásobnému renderu pro stejný produkt v jednom requestu.
+ *
+ * @param bool $as_link Předá se do crystalex_render_badges_for_product() – viz tam.
  */
-function crystalex_render_badges_action() {
+function crystalex_render_badges_action( $as_link = true ) {
 	if ( ! crystalex_check_woocommerce() ) {
 		return;
 	}
@@ -606,21 +628,33 @@ function crystalex_render_badges_action() {
 
 	$rendered[ $product_id ] = true;
 
-	crystalex_render_badges_for_product( $product_id );
+	crystalex_render_badges_for_product( $product_id, $as_link );
 }
 
-// ARCHIV / SHOP – před titlem produktu.
-add_action( 'woocommerce_before_shop_loop_item_title', 'crystalex_render_badges_action', 10 );
+/**
+ * ARCHIV / SHOP – před titlem produktu. Výchozí WooCommerce šablona zde celou
+ * dlaždici produktu obaluje jedním <a>, proto se badge vykreslí neklikatelně.
+ */
+function crystalex_render_badges_action_archive() {
+	crystalex_render_badges_action( false );
+}
+add_action( 'woocommerce_before_shop_loop_item_title', 'crystalex_render_badges_action_archive', 10 );
 
-// SINGLE PRODUCT – nad summary (nad názvem).
-add_action( 'woocommerce_before_single_product_summary', 'crystalex_render_badges_action', 5 );
+/**
+ * SINGLE PRODUCT – nad summary (nad názvem). Zde žádný obalový odkaz není,
+ * takže badge může být bezpečně klikatelný.
+ */
+function crystalex_render_badges_action_single() {
+	crystalex_render_badges_action( true );
+}
+add_action( 'woocommerce_before_single_product_summary', 'crystalex_render_badges_action_single', 5 );
 
 /**
  * Shortcode pro použití v Bricksu (a kdekoliv jinde):
  *
  * [cx_product_badges]
  */
-function cx_product_badges_shortcode( $atts = array() ) {
+function crystalex_product_badges_shortcode( $atts = array() ) {
 	if ( ! crystalex_check_woocommerce() ) {
 		return '';
 	}
@@ -635,4 +669,4 @@ function cx_product_badges_shortcode( $atts = array() ) {
 	crystalex_render_badges_for_product( $product_id );
 	return ob_get_clean();
 }
-add_shortcode( 'cx_product_badges', 'cx_product_badges_shortcode' );
+add_shortcode( 'cx_product_badges', 'crystalex_product_badges_shortcode' );

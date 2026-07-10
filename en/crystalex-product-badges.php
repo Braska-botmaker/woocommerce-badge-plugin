@@ -2,7 +2,7 @@
 /**
  * Plugin Name: CX Product Badges
  * Description: Automatically displays a badge based on product tags, and automatically adds the "Sale" and "Out of stock" tags based on product status. Lets you configure badge display priority via tag metadata.
- * Version: 3.0.0
+ * Version: 3.0.1
  * Author: Matěj Horák
  * Author URI: https://crystalexcz.com
  * License: GPL v2 or later
@@ -114,10 +114,12 @@ add_action( 'product_tag_edit_form_fields', 'crystalex_add_tag_priority_field_ed
  * @param int $term_id Term ID.
  */
 function crystalex_save_tag_priority_create( $term_id ) {
+	// phpcs:disable WordPress.Security.NonceVerification.Missing -- runs only from WP core's own nonce-protected "add tag" form submission.
 	if ( isset( $_POST['tag_priority'] ) ) {
 		$priority = (int) $_POST['tag_priority'];
 		update_term_meta( $term_id, 'badge_priority', $priority );
 	}
+	// phpcs:enable WordPress.Security.NonceVerification.Missing
 }
 add_action( 'created_product_tag', 'crystalex_save_tag_priority_create' );
 
@@ -127,10 +129,12 @@ add_action( 'created_product_tag', 'crystalex_save_tag_priority_create' );
  * @param int $term_id Term ID.
  */
 function crystalex_save_tag_priority_edit( $term_id ) {
+	// phpcs:disable WordPress.Security.NonceVerification.Missing -- runs only from WP core's own nonce-protected "edit tag" form submission.
 	if ( isset( $_POST['tag_priority'] ) ) {
 		$priority = (int) $_POST['tag_priority'];
 		update_term_meta( $term_id, 'badge_priority', $priority );
 	}
+	// phpcs:enable WordPress.Security.NonceVerification.Missing
 }
 add_action( 'edited_product_tag', 'crystalex_save_tag_priority_edit' );
 
@@ -329,12 +333,13 @@ function crystalex_admin_page() {
 		return;
 	}
 
-	$processed         = 0;
-	$message           = '';
-	$settings_message  = '';
+	$processed        = 0;
+	$message          = '';
+	$settings_message = '';
 
 	if ( isset( $_POST['cx_process_products'] ) && check_admin_referer( 'cx_process_products' ) ) {
 		$processed = crystalex_process_all_products();
+		/* translators: %d: number of products processed. */
 		$message   = sprintf(
 			__( 'Processed %d products! Automatic badges (Sale, Out of stock) have been updated.', 'crystalex-badges' ),
 			$processed
@@ -515,35 +520,38 @@ function crystalex_get_product_badge_tags( $product_id ) {
 
 	// Attach the priority to each tag.
 	foreach ( $terms as $term ) {
-		$priority        = get_term_meta( $term->term_id, 'badge_priority', true );
-		$term->priority  = $priority !== '' ? (int) $priority : 0;
+		$priority       = get_term_meta( $term->term_id, 'badge_priority', true );
+		$term->priority = $priority !== '' ? (int) $priority : 0;
 	}
 
 	// Sort by priority (highest first).
-	usort(
-		$terms,
-		function ( $a, $b ) {
-			return $b->priority - $a->priority;
-		}
-	);
+	usort( $terms, function ( $a, $b ) {
+		return $b->priority - $a->priority;
+	} );
 
 	return $terms;
 }
 
 /**
  * Renders the HTML badge for a given product.
- * CLEAN, UNSTYLED HTML OUTPUT:
- *
- * <div class="crystalex-badges-wrapper">
- *   <a href="tag-archive-url" class="badge badge-slug">Tag name</a>
- * </div>
+ * CLEAN, UNSTYLED HTML OUTPUT: a div.crystalex-badges-wrapper wrapping a single
+ * link or span with classes "badge badge-{slug}" and the tag name as its text.
  *
  * DISPLAY: Only the single highest-priority badge (configurable in the UI).
- * The badge is a clickable link to the archive of all products with that tag.
+ * The badge links to the archive of all products with that tag – BUT only
+ * where it's safe to render a link at all, see $as_link below.
  *
- * @param int $product_id Product ID.
+ * @param int  $product_id Product ID.
+ * @param bool $as_link    Render the badge as a clickable <a>? On product listings
+ *                          (shop/archive) the default WooCommerce template wraps the
+ *                          entire product card (thumbnail + title) in a single <a>,
+ *                          and this hook fires inside it – nesting another <a> is
+ *                          invalid HTML, and the browser will close the outer link
+ *                          early because of it, making the product card unclickable.
+ *                          So the badge must render as a plain, non-linked <span>
+ *                          there instead.
  */
-function crystalex_render_badges_for_product( $product_id ) {
+function crystalex_render_badges_for_product( $product_id, $as_link = true ) {
 	$product_id = (int) $product_id;
 
 	if ( ! $product_id ) {
@@ -567,27 +575,39 @@ function crystalex_render_badges_for_product( $product_id ) {
 		return;
 	}
 
-	// Get the URL to the product archive for this tag.
-	$term_link = get_term_link( $top_badge->term_id, 'product_tag' );
-	if ( is_wp_error( $term_link ) ) {
-		$term_link = '#';
+	echo '<div class="crystalex-badges-wrapper">';
+
+	if ( $as_link ) {
+		// Get the URL to the product archive for this tag.
+		$term_link = get_term_link( $top_badge->term_id, 'product_tag' );
+		if ( is_wp_error( $term_link ) ) {
+			$term_link = '#';
+		}
+
+		printf(
+			'<a href="%1$s" class="badge badge-%2$s">%3$s</a>',
+			esc_url( $term_link ),
+			esc_attr( $slug ),
+			esc_html( $name )
+		);
+	} else {
+		printf(
+			'<span class="badge badge-%1$s">%2$s</span>',
+			esc_attr( $slug ),
+			esc_html( $name )
+		);
 	}
 
-	echo '<div class="crystalex-badges-wrapper">';
-	printf(
-		'<a href="%1$s" class="badge badge-%2$s">%3$s</a>',
-		esc_url( $term_link ),
-		esc_attr( $slug ),
-		esc_html( $name )
-	);
 	echo '</div>';
 }
 
 /**
  * Hook wrapper for classic WooCommerce templates.
  * Prevents rendering the same product's badge more than once per request.
+ *
+ * @param bool $as_link Passed through to crystalex_render_badges_for_product(), see there.
  */
-function crystalex_render_badges_action() {
+function crystalex_render_badges_action( $as_link = true ) {
 	if ( ! crystalex_check_woocommerce() ) {
 		return;
 	}
@@ -607,21 +627,34 @@ function crystalex_render_badges_action() {
 
 	$rendered[ $product_id ] = true;
 
-	crystalex_render_badges_for_product( $product_id );
+	crystalex_render_badges_for_product( $product_id, $as_link );
 }
 
-// ARCHIVE / SHOP - before the product title.
-add_action( 'woocommerce_before_shop_loop_item_title', 'crystalex_render_badges_action', 10 );
+/**
+ * ARCHIVE / SHOP - before the product title. The default WooCommerce template
+ * wraps the entire product card in a single <a> here, so the badge renders
+ * as a non-linked span to avoid an invalid, link-breaking nested anchor.
+ */
+function crystalex_render_badges_action_archive() {
+	crystalex_render_badges_action( false );
+}
+add_action( 'woocommerce_before_shop_loop_item_title', 'crystalex_render_badges_action_archive', 10 );
 
-// SINGLE PRODUCT - above the summary (above the title).
-add_action( 'woocommerce_before_single_product_summary', 'crystalex_render_badges_action', 5 );
+/**
+ * SINGLE PRODUCT - above the summary (above the title). There is no wrapping
+ * link here, so the badge can safely be a clickable link.
+ */
+function crystalex_render_badges_action_single() {
+	crystalex_render_badges_action( true );
+}
+add_action( 'woocommerce_before_single_product_summary', 'crystalex_render_badges_action_single', 5 );
 
 /**
  * Shortcode for use in Bricks Builder (and anywhere else):
  *
  * [cx_product_badges]
  */
-function cx_product_badges_shortcode( $atts = array() ) {
+function crystalex_product_badges_shortcode( $atts = array() ) {
 	if ( ! crystalex_check_woocommerce() ) {
 		return '';
 	}
@@ -636,4 +669,4 @@ function cx_product_badges_shortcode( $atts = array() ) {
 	crystalex_render_badges_for_product( $product_id );
 	return ob_get_clean();
 }
-add_shortcode( 'cx_product_badges', 'cx_product_badges_shortcode' );
+add_shortcode( 'cx_product_badges', 'crystalex_product_badges_shortcode' );

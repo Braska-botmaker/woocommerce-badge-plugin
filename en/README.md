@@ -16,7 +16,7 @@ The plugin displays **only the single highest-priority badge** based on a produc
 - **Configurable priority in the UI** — every tag has a priority from 0–999
 - **Automatic tags** — `Sale` and `Out of stock` are added/removed automatically
 - **Independent on/off switches** — Sale and Out-of-stock automation can be toggled independently in the admin
-- **Clickable badge** — the badge links to the archive of products with that tag
+- **Clickable badge** — on the single product page and via the shortcode, the badge links to the archive of products with that tag; on product listings (shop/archive) it renders as a non-linked `<span>` instead, since the default WooCommerce template already wraps the whole product card in its own link and a nested `<a>` would break it
 - **Clean HTML output** — no inline styles, style the badge however you like
 - **Bricks Builder compatible** — `[cx_product_badges]` shortcode
 - **Full WPML translation support** — tags and badges are translated automatically
@@ -130,16 +130,23 @@ A product has these tags:
 
 **IMPORTANT:** The plugin renders **clean HTML with no inline styles whatsoever**.
 
-Output looks like this:
+On the single product page and via the shortcode, the output is a clickable link:
 ```html
 <div class="crystalex-badges-wrapper">
     <a href="/product-tag/new/" class="badge badge-new">New</a>
 </div>
 ```
 
+On product listings (shop/archive) the badge is a non-linked `<span>` instead (see [Technical details](#technical-details)):
+```html
+<div class="crystalex-badges-wrapper">
+    <span class="badge badge-new">New</span>
+</div>
+```
+
 ### CSS classes for styling
 
-Every badge exposes these CSS classes:
+Every badge exposes these CSS classes, whether it renders as an `<a>` or a `<span>`:
 - `.crystalex-badges-wrapper` — wrapper around the badge
 - `.badge` — shared class for every badge
 - `.badge-{slug}` — tag-specific class based on the tag's slug (e.g. `.badge-new`, `.badge-sale`)
@@ -284,6 +291,14 @@ The button walks every product and adds/removes the automatic `Sale` and `Out of
 - **Only 1 badge is shown** — the one with the highest priority
 - Priority range: 0–999 (higher = more important)
 - Configurable in the UI per tag
+
+### Link vs. span, by placement
+
+| Placement | Element | Why |
+| --- | --- | --- |
+| Product listings (shop/archive/category) | `<span>` (not a link) | The default WooCommerce template wraps the entire product card in a single `<a>` here. Nesting another `<a>` inside it is invalid HTML — the browser would close the outer link early and break the product card's click-through. |
+| Single product page | `<a>` (clickable, links to the tag archive) | No wrapping link exists here. |
+| `[cx_product_badges]` shortcode | `<a>` (clickable, links to the tag archive) | Placement is entirely up to whoever inserts the shortcode (e.g. in Bricks Builder). |
 
 ### Automatic tags
 
@@ -448,7 +463,7 @@ add_action( 'woocommerce_before_shop_loop_item_title', 'crystalex_render_badges_
 add_action( 'woocommerce_before_single_product_summary', 'crystalex_render_badges_action', 5 );
 
 // Shortcode.
-add_shortcode( 'cx_product_badges', 'cx_product_badges_shortcode' );
+add_shortcode( 'cx_product_badges', 'crystalex_product_badges_shortcode' );
 ```
 
 ## License
