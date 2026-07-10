@@ -339,8 +339,8 @@ function crystalex_admin_page() {
 
 	if ( isset( $_POST['cx_process_products'] ) && check_admin_referer( 'cx_process_products' ) ) {
 		$processed = crystalex_process_all_products();
-		/* translators: %d: number of products processed. */
 		$message = sprintf(
+			/* translators: %d: number of products processed. */
 			__( 'Zpracováno %d produktů! Automatické badge (Sleva, Vyprodáno) byly aktualizovány.', 'crystalex-badges' ),
 			$processed
 		);
@@ -476,12 +476,12 @@ function crystalex_admin_page() {
 function crystalex_get_current_product_id() {
 	global $product;
 
-	// 1) global $product
+	// Nejdřív zkus globální $product.
 	if ( $product instanceof WC_Product ) {
 		return (int) $product->get_id();
 	}
 
-	// 2) get_the_ID + wc_get_product
+	// Jinak zkus get_the_ID() + wc_get_product().
 	$post_id = get_the_ID();
 	if ( $post_id ) {
 		$maybe_product = wc_get_product( $post_id );
@@ -525,9 +525,12 @@ function crystalex_get_product_badge_tags( $product_id ) {
 	}
 
 	// Seřaď podle priority (nejvyšší první)
-	usort( $terms, function( $a, $b ) {
-		return $b->priority - $a->priority;
-	} );
+	usort(
+		$terms,
+		function ( $a, $b ) {
+			return $b->priority - $a->priority;
+		}
+	);
 
 	return $terms;
 }

@@ -339,8 +339,8 @@ function crystalex_admin_page() {
 
 	if ( isset( $_POST['cx_process_products'] ) && check_admin_referer( 'cx_process_products' ) ) {
 		$processed = crystalex_process_all_products();
-		/* translators: %d: number of products processed. */
-		$message   = sprintf(
+		$message = sprintf(
+			/* translators: %d: number of products processed. */
 			__( 'Processed %d products! Automatic badges (Sale, Out of stock) have been updated.', 'crystalex-badges' ),
 			$processed
 		);
@@ -476,12 +476,12 @@ function crystalex_admin_page() {
 function crystalex_get_current_product_id() {
 	global $product;
 
-	// 1) global $product.
+	// Try the global $product first.
 	if ( $product instanceof WC_Product ) {
 		return (int) $product->get_id();
 	}
 
-	// 2) get_the_ID + wc_get_product.
+	// Otherwise fall back to get_the_ID() + wc_get_product().
 	$post_id = get_the_ID();
 	if ( $post_id ) {
 		$maybe_product = wc_get_product( $post_id );
@@ -525,9 +525,12 @@ function crystalex_get_product_badge_tags( $product_id ) {
 	}
 
 	// Sort by priority (highest first).
-	usort( $terms, function ( $a, $b ) {
-		return $b->priority - $a->priority;
-	} );
+	usort(
+		$terms,
+		function ( $a, $b ) {
+			return $b->priority - $a->priority;
+		}
+	);
 
 	return $terms;
 }
