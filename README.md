@@ -76,6 +76,10 @@ The same checks run automatically in CI on every push and pull request (see [`.g
 
 When changing behaviour, keep the two variants in sync: a fix or feature almost always needs to land in both `cz/crystalex-product-badges.php` and `en/crystalex-product-badges.php`. See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
+## Releases
+
+Pushing a tag matching `v*.*.*` (e.g. `v3.0.2`) triggers [`.github/workflows/release.yml`](.github/workflows/release.yml), which builds a ready-to-upload ZIP for each variant (`crystalex-product-badges-cz-<version>.zip`, `crystalex-product-badges-en-<version>.zip`) and attaches them to a GitHub Release. Grab the latest ones from the [Releases page](../../releases) instead of zipping the folders by hand.
+
 ## Versioning & changelog
 
 Both variants are versioned and released together (identical `Version:` header). See [CHANGELOG.md](CHANGELOG.md) for the full history.

@@ -32,7 +32,7 @@ Plugin automaticky zobrazuje **pouze 1 badge s nejvyšší prioritou** podle tag
 
 ## 🚀 Instalace
 
-1. Stáhněte tuto složku jako ZIP (nebo naklonujte repo a zazipujte složku `cz/`)
+1. Stáhněte nejnovější `crystalex-product-badges-cz-*.zip` ze [stránky Releases](../../releases) (nebo naklonujte repo a zazipujte složku `cz/` sami)
 2. V administraci WordPress: **Pluginy → Přidat nový → Nahrát plugin**
 3. Vyberte ZIP soubor a klikněte na **Instalovat**
 4. **Aktivujte** plugin

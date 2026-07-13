@@ -32,7 +32,7 @@ The plugin displays **only the single highest-priority badge** based on a produc
 
 ## Installation
 
-1. Download this folder as a ZIP (or clone the repo and zip the `en/` folder)
+1. Download the latest `crystalex-product-badges-en-*.zip` from the [Releases page](../../releases) (or clone the repo and zip the `en/` folder yourself)
 2. In WP Admin: **Plugins -> Add New -> Upload Plugin**
 3. Choose the ZIP and click **Install Now**
 4. **Activate** the plugin

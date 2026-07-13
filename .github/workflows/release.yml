@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build plugin ZIPs and publish release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Determine version from tag
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Build CZ plugin ZIP
+        run: |
+          mkdir -p build/crystalex-product-badges
+          cp cz/crystalex-product-badges.php cz/example.css LICENSE build/crystalex-product-badges/
+          (cd build && zip -r "../crystalex-product-badges-cz-${{ steps.version.outputs.version }}.zip" crystalex-product-badges)
+          rm -rf build
+
+      - name: Build EN plugin ZIP
+        run: |
+          mkdir -p build/crystalex-product-badges
+          cp en/crystalex-product-badges.php en/example.css LICENSE build/crystalex-product-badges/
+          (cd build && zip -r "../crystalex-product-badges-en-${{ steps.version.outputs.version }}.zip" crystalex-product-badges)
+          rm -rf build
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: v${{ steps.version.outputs.version }}
+          generate_release_notes: true
+          body: |
+            See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for full details.
+
+            **Install:** download the CZ or EN zip below and upload it via **Plugins → Add New → Upload Plugin** in WordPress. Install only one variant per site (both define the same PHP function names).
+          files: |
+            crystalex-product-badges-cz-${{ steps.version.outputs.version }}.zip
+            crystalex-product-badges-en-${{ steps.version.outputs.version }}.zip
