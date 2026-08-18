@@ -1,11 +1,14 @@
 # CX Product Badges
 
-[![Release](https://img.shields.io/github/v/release/Braska-botmaker/woocommerce-badge-plugin?label=release)](https://github.com/Braska-botmaker/woocommerce-badge-plugin/releases/latest)
+[![Release](https://img.shields.io/github/v/release/Braska-botmaker/woocommerce-badge-plugin?label=release&color=blue)](https://github.com/Braska-botmaker/woocommerce-badge-plugin/releases/latest)
 [![CI](https://github.com/Braska-botmaker/woocommerce-badge-plugin/actions/workflows/ci.yml/badge.svg)](https://github.com/Braska-botmaker/woocommerce-badge-plugin/actions/workflows/ci.yml)
 [![License: GPL v2+](https://img.shields.io/badge/License-GPLv2%2B-blue.svg)](LICENSE)
-[![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-21759b.svg)](https://wordpress.org)
-[![WooCommerce](https://img.shields.io/badge/WooCommerce-7.0%2B-96588a.svg)](https://woocommerce.com)
-[![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4.svg)](https://php.net)
+[![Open issues](https://img.shields.io/github/issues/Braska-botmaker/woocommerce-badge-plugin)](https://github.com/Braska-botmaker/woocommerce-badge-plugin/issues)
+![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4?logo=php&logoColor=white)
+![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-21759b?logo=wordpress&logoColor=white)
+![WooCommerce](https://img.shields.io/badge/WooCommerce-7.0%2B-96588a?logo=woocommerce&logoColor=white)
+
+> **CX Product Badges** — a lightweight WooCommerce plugin that shows a single, priority-ranked badge on each product based on its tags.
 
 A lightweight WooCommerce plugin that shows a single, priority-ranked badge on each product based on its tags, and automatically keeps `Sale` / `Out of stock` tags in sync with product state.
 
