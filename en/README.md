@@ -326,6 +326,7 @@ The plugin uses these hooks for rendering:
 **Location:** CX Badge (top-level menu) or WooCommerce -> Update Badges
 
 **Features:**
+- Modern, full-width interface with toggle switches for enabling/disabling automation
 - Bulk processing of all products
 - Overview of automatic badges
 - Processed-product count
@@ -479,7 +480,7 @@ Full license text: https://www.gnu.org/licenses/gpl-2.0.html
 
 Built by [Matěj Horák](https://crystalexcz.com), originally developed for the [Crystalex](https://crystalexcz.com) e-shop, using modern WordPress and WooCommerce standards.
 
-## Quick overview (Version 3.0.0)
+## Quick overview (Version 3.0.3)
 
 | Feature                  | Description                                                        |
 |---------------------------|----------------------------------------------------------------------|
@@ -487,7 +488,7 @@ Built by [Matěj Horák](https://crystalexcz.com), originally developed for the 
 | **Priority**               | 0–999, configurable in the UI per tag                                |
 | **Automatic tags**         | Sale (priority 80), Out of stock (priority 30)                       |
 | **Automation on/off**      | Sale and Out-of-stock can be toggled independently                   |
-| **Admin screen**           | CX Badge in the top-level menu                                       |
+| **Admin screen**           | CX Badge in the top-level menu, modern full-width design             |
 | **Bulk processing**        | Button to refresh badges for all products                            |
 | **Bricks Builder**         | `[cx_product_badges]` shortcode                                      |
 | **WPML**                   | Full translation support                                             |

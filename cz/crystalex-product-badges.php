@@ -2,7 +2,7 @@
 /**
  * Plugin Name: CX Product Badges
  * Description: Automaticky přidává badge podle toho jaký má tag, automaticky přidáva tag "Sleva" a "Vyprodáno" podle stavu produktu. Umožňuje nastavit prioritu zobrazení badge pomocí metadat tagů.
- * Version: 3.0.2
+ * Version: 3.0.3
  * Author: Matěj Horák
  * Author URI: https://crystalexcz.com
  * License: GPL v2 or later

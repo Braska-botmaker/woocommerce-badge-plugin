@@ -326,6 +326,7 @@ Plugin používá tyto hooky pro zobrazení:
 **Umístění:** CX Badge (levé menu) nebo WooCommerce → Aktualizovat Badge
 
 **Funkce:**
+- Moderní rozhraní na celou šířku obrazovky s přepínači pro zapnutí/vypnutí automatiky
 - Hromadné zpracování všech produktů
 - Přehled automatických badge
 - Statistiky zpracovaných produktů
@@ -479,7 +480,7 @@ Plné znění licence: https://www.gnu.org/licenses/gpl-2.0.html
 
 Plugin vytvořil [Matěj Horák](https://crystalexcz.com) pro e-shop [Crystalex](https://crystalexcz.com) s použitím moderních WordPress a WooCommerce standardů.
 
-## 📌 Rychlý přehled (Verze 3.0.0)
+## 📌 Rychlý přehled (Verze 3.0.3)
 
 | Vlastnost | Popis |
 |-----------|-------|
@@ -487,7 +488,7 @@ Plugin vytvořil [Matěj Horák](https://crystalexcz.com) pro e-shop [Crystalex]
 | **Priorita** | 0-999, nastavitelná v UI u každého tagu |
 | **Automatické tagy** | SLEVA (priorita 80), VYPRODÁNO (priorita 30) |
 | **Zapnutí/vypnutí automatiky** | Sleva a Vyprodáno lze nezávisle vypnout v administraci |
-| **Admin rozhraní** | CX Badge v hlavním menu |
+| **Admin rozhraní** | CX Badge v hlavním menu, moderní design na celou šířku |
 | **Hromadné zpracování** | Tlačítko pro aktualizaci všech produktů |
 | **Bricks Builder** | Shortcode `[cx_product_badges]` |
 | **WPML** | Plná podpora překladů |

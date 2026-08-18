@@ -2,7 +2,7 @@
 /**
  * Plugin Name: CX Product Badges
  * Description: Automatically displays a badge based on product tags, and automatically adds the "Sale" and "Out of stock" tags based on product status. Lets you configure badge display priority via tag metadata.
- * Version: 3.0.2
+ * Version: 3.0.3
  * Author: Matěj Horák
  * Author URI: https://crystalexcz.com
  * License: GPL v2 or later

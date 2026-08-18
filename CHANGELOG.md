@@ -4,6 +4,15 @@ All notable changes to this plugin are documented in this file. The Czech (`cz/`
 
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [3.0.3] - 2026-08-18
+
+### Changed
+
+- Redesigned the admin settings screen (WooCommerce → Update Badges / CX Badge): now uses the full width of the screen instead of WordPress's default narrow `.card` layout, with a modern card-based grid, toggle switches for the automatic-tagging settings, and pill-style status badges.
+- The admin page CSS is now loaded via `wp_add_inline_style()` on the plugin's own two admin pages, instead of being hardcoded inline in the page markup.
+- The admin page heading is now just "CX Product Badges" instead of "CX Product Badges - Update"/"- Aktualizace", since the page covers settings and bulk actions, not only updates.
+- The root [README.md](../README.md) now includes a release-version badge that tracks the latest published GitHub Release.
+
 ## [3.0.2] - 2026-07-10
 
 ### Fixed
