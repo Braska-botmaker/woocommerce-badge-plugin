@@ -18,7 +18,7 @@ Plugin automaticky zobrazuje **pouze 1 badge s nejvyšší prioritou** podle tag
 - ✅ **Samostatné zapnutí/vypnutí automatiky** - Sleva a Vyprodáno lze v administraci nezávisle na sobě vypnout
 - ✅ **Badge nikdy není odkaz** - vykresluje se vždy jako neklikatelný `<span>` (nikdy `<a>`), na archivu produktů, na detailu produktu i přes shortcode - záměrně, aby nemohlo dojít ke vnořenému odkazu uvnitř odkazu na dlaždici produktu a rozbití proklikatelnosti
 - ✅ **Čistý HTML výstup** - BEZ inline stylů, stylujte si badge podle sebe
-- ✅ **Bricks Builder kompatibilní** - shortcode `[cx_product_badges]`
+- ✅ **Funguje v jakémkoli page builderu** - shortcode `[cx_product_badges]` se vykreslí kdekoli, kde WordPress umí shortcody (Bricks, Elementor, Divi, Gutenberg, obyčejné šablony motivu, …)
 - ✅ **Plná podpora WPML překladů** - tagy i badge se automaticky překládají
 - ✅ **Prevence duplicit** - badge se renderují pouze jednou
 - ✅ **Robustní detekce produktu** - funguje i bez global $product
@@ -47,9 +47,11 @@ Plugin automaticky zobrazí badge na těchto místech:
 - **Výpis produktů** (shop, archiv, kategorie) - před názvem
 - **Detail produktu** - nad popisem
 
-### Varianta B: Bricks Builder (shortcode)
+### Varianta B: Jakýkoli page builder nebo shortcode blok
 
-**DŮLEŽITÉ:** Pro použití v Bricks Builderu musíte vložit shortcode **mezi Dynamic Data fields**.
+Shortcode `[cx_product_badges]` není vázaný na žádný konkrétní builder - funguje všude, kde WordPress vykresluje shortcody: Shortcode blok v Gutenbergu, Shortcode/Text widget v Elementoru nebo Divi, Code element v Oxygenu, widget area, nebo přímo v šabloně motivu přes `do_shortcode()`.
+
+**Konkrétně v Bricks Builderu:** Bricks nevykreslí obyčejný text shortcode, takže ho musíte vložit **jako Dynamic Data field**:
 
 1. V Bricks editoru otevřete template produktu
 2. Přidejte element **Shortcode**
@@ -146,7 +148,7 @@ Každá badge má tyto CSS třídy:
 
 ### Příklad stylování
 
-Přidejte si do svého CSS (v tématu, Bricks CSS editoru, nebo Additional CSS):
+Přidejte si do svého CSS (v tématu, ve vlastním CSS panelu svého page builderu, nebo v Additional CSS):
 
 ```css
 /* Wrapper badge */
@@ -197,9 +199,9 @@ Přidejte si do svého CSS (v tématu, Bricks CSS editoru, nebo Additional CSS):
 }
 ```
 
-Připravený, hezčí styl (pro Bricks Builder) najdeš v souboru [`example.css`](example.css) v této složce.
+Připravený, hezčí styl najdeš v souboru [`example.css`](example.css) v této složce - je psaný s ohledem na Bricks Builder, ale jde o obyčejné CSS, které funguje v jakémkoli motivu nebo builderu.
 
-**V Bricks Builderu:** CSS můžete přidat do **Bricks → Settings → Custom Code → CSS**
+**Konkrétně v Bricks Builderu:** CSS můžete přidat do **Bricks → Settings → Custom Code → CSS**
 
 ## 🌍 WPML Podpora
 
@@ -229,9 +231,11 @@ WPML automaticky překládá názvy tagů, takže badge se zobrazují v jazyce a
 
 ## 🔧 Pokročilé použití
 
-### Shortcode v Bricks Builderu
+### Shortcode v jednotlivých builderech
 
-**KRITICKÉ:** Shortcode `[cx_product_badges]` musíte vložit **jako Dynamic Data field**, ne jako běžný text!
+Shortcode `[cx_product_badges]` funguje v jakémkoli builderu, který podporuje WordPress shortcody - vlož ho do Shortcode widgetu v Elementoru, Text modulu v Divi, Shortcode bloku v Gutenbergu nebo Code elementu v Oxygenu a vykreslí se tak, jak je.
+
+**Bricks Builder je výjimka:** nevykreslí obyčejný text shortcode, takže ho musíte vložit **jako Dynamic Data field**, ne jako běžný text!
 
 **Správný postup:**
 1. V Bricks editoru přidejte element **Shortcode**
@@ -319,7 +323,7 @@ Plugin používá tyto hooky pro zobrazení:
 
 | Shortcode | Použití |
 |-----------|---------|
-| `[cx_product_badges]` | Pro Bricks Builder a custom templates |
+| `[cx_product_badges]` | Pro jakýkoli page builder nebo vlastní šablonu |
 
 ### Admin rozhraní
 
@@ -358,7 +362,7 @@ Veškerá data jsou uložená standardním WordPress způsobem v tabulce `wp_ter
 - Vyčistěte cache (pokud používáte caching plugin)
 - Obnovte stránku (Ctrl+F5)
 
-**V Bricks Builderu:**
+**Konkrétně v Bricks Builderu:**
 1. **DŮLEŽITÉ:** Shortcode `[cx_product_badges]` musí být jako **Dynamic Data field**
 2. Použijte element **Shortcode** a vložte `[cx_product_badges]`
 3. Ujistěte se, že je shortcode uvnitř product loop
@@ -494,7 +498,7 @@ Plugin vytvořil [Matěj Horák](https://crystalexcz.com) pro e-shop [Crystalex]
 | **Zapnutí/vypnutí automatiky** | Sleva a Vyprodáno lze nezávisle vypnout v administraci |
 | **Admin rozhraní** | CX Badge v hlavním menu, moderní design na celou šířku |
 | **Hromadné zpracování** | Tlačítko pro aktualizaci všech produktů |
-| **Bricks Builder** | Shortcode `[cx_product_badges]` |
+| **Page buildery** | Shortcode `[cx_product_badges]` funguje v jakémkoli builderu (příklad s Dynamic Data pro Bricks) |
 | **WPML** | Plná podpora překladů |
 | **HTML výstup** | Čistý, bez inline stylů |
 | **Kompatibilita** | WordPress 6.0+, WooCommerce 7.0+, PHP 7.4+ |
@@ -507,4 +511,4 @@ Plugin vytvořil [Matěj Horák](https://crystalexcz.com) pro e-shop [Crystalex]
 2. **Jděte do CX Badge** (levé menu) → **Zpracovat všechny produkty**
 3. **Nastavte priority tagů** v Produkty → Štítky produktu
 4. **Přidejte CSS** pro styling badge
-5. **V Bricks:** Použijte shortcode `[cx_product_badges]` v product loop
+5. **Shortcode:** Použijte `[cx_product_badges]` v product loop - v Bricks, Elementoru, Divi, Gutenbergu nebo jiném builderu

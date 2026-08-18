@@ -18,7 +18,7 @@ The plugin displays **only the single highest-priority badge** based on a produc
 - **Independent on/off switches** — Sale and Out-of-stock automation can be toggled independently in the admin
 - **Never a link** — the badge always renders as a non-linked `<span>` (never an `<a>`), on the archive, the single product page, and via the shortcode. This is intentional: it avoids nesting a link inside the link that already wraps the product card, which would break click-through
 - **Clean HTML output** — no inline styles, style the badge however you like
-- **Bricks Builder compatible** — `[cx_product_badges]` shortcode
+- **Works with any page builder** — `[cx_product_badges]` shortcode renders anywhere WordPress renders shortcodes (Bricks, Elementor, Divi, Gutenberg, plain theme templates, …)
 - **Full WPML translation support** — tags and badges are translated automatically
 - **Duplicate-render prevention** — badges are only rendered once per product/request
 - **Robust product detection** — works even without a global `$product`
@@ -47,9 +47,11 @@ The plugin automatically renders the badge in these places:
 - **Product listings** (shop, archive, category pages) — before the title
 - **Single product page** — above the summary
 
-### Option B: Bricks Builder (shortcode)
+### Option B: Any page builder or shortcode block
 
-**IMPORTANT:** In Bricks Builder the shortcode must be inserted **as a Dynamic Data field**.
+The `[cx_product_badges]` shortcode isn't tied to any single builder — it works anywhere WordPress renders shortcodes: a Shortcode block in Gutenberg, a Shortcode/Text widget in Elementor or Divi, a Code element in Oxygen, a widget area, or directly in a theme template via `do_shortcode()`.
+
+**In Bricks Builder specifically:** Bricks doesn't render plain shortcode text, so the shortcode must be inserted **as a Dynamic Data field**:
 
 1. Open the product template in the Bricks editor
 2. Add a **Shortcode** element
@@ -146,7 +148,7 @@ Every badge exposes these CSS classes, whether it renders as an `<a>` or a `<spa
 
 ### Styling example
 
-Add this to your CSS (theme stylesheet, Bricks CSS editor, or Additional CSS):
+Add this to your CSS (theme stylesheet, your page builder's custom CSS panel, or WordPress's Additional CSS):
 
 ```css
 /* Badge wrapper */
@@ -197,9 +199,9 @@ Add this to your CSS (theme stylesheet, Bricks CSS editor, or Additional CSS):
 }
 ```
 
-A ready-to-use, more polished stylesheet (Bricks Builder flavoured) is included in [`example.css`](example.css) in this folder.
+A ready-to-use, more polished stylesheet is included in [`example.css`](example.css) in this folder — written with Bricks Builder in mind, but plain CSS that works with any theme or builder.
 
-**In Bricks Builder:** add CSS under **Bricks -> Settings -> Custom Code -> CSS**.
+**In Bricks Builder specifically:** add CSS under **Bricks -> Settings -> Custom Code -> CSS**.
 
 ## WPML support
 
@@ -229,9 +231,11 @@ WPML automatically translates tag names, so badges render in the current page's 
 
 ## Advanced usage
 
-### Shortcode in Bricks Builder
+### Shortcode usage notes per builder
 
-**CRITICAL:** the `[cx_product_badges]` shortcode must be inserted **as a Dynamic Data field**, not as plain text!
+The `[cx_product_badges]` shortcode works in any builder that supports WordPress shortcodes — drop it into Elementor's Shortcode widget, Divi's Text module, a Gutenberg Shortcode block, or Oxygen's Code element, and it renders as-is.
+
+**Bricks Builder is the one exception:** it doesn't render plain shortcode text, so the shortcode must be inserted **as a Dynamic Data field**, not as plain text.
 
 **Correct steps:**
 1. In the Bricks editor, add a **Shortcode** element
@@ -319,7 +323,7 @@ The plugin uses these hooks for rendering:
 
 | Shortcode              | Use case                              |
 |-------------------------|----------------------------------------|
-| `[cx_product_badges]`   | Bricks Builder and custom templates    |
+| `[cx_product_badges]`   | Any page builder or custom template    |
 
 ### Admin screen
 
@@ -358,7 +362,7 @@ All data is stored the standard WordPress way, in the `wp_terms` and `wp_term_re
 - Clear any caching plugin's cache
 - Hard refresh the page (Ctrl+F5)
 
-**In Bricks Builder:**
+**In Bricks Builder specifically:**
 1. **IMPORTANT:** the `[cx_product_badges]` shortcode must be a **Dynamic Data field**
 2. Use a **Shortcode** element with `[cx_product_badges]`
 3. Make sure the shortcode sits inside the product loop
@@ -494,7 +498,7 @@ Built by [Matěj Horák](https://crystalexcz.com), originally developed for the 
 | **Automation on/off**      | Sale and Out-of-stock can be toggled independently                   |
 | **Admin screen**           | CX Badge in the top-level menu, modern full-width design             |
 | **Bulk processing**        | Button to refresh badges for all products                            |
-| **Bricks Builder**         | `[cx_product_badges]` shortcode                                      |
+| **Page builders**          | `[cx_product_badges]` shortcode works in any builder (Bricks Dynamic Data example included) |
 | **WPML**                   | Full translation support                                             |
 | **HTML output**            | Clean, no inline styles                                              |
 | **Compatibility**          | WordPress 6.0+, WooCommerce 7.0+, PHP 7.4+                           |
@@ -507,4 +511,4 @@ Full changelog: [../CHANGELOG.md](../CHANGELOG.md)
 2. **Go to CX Badge** (left menu) -> **Process all products**
 3. **Set tag priorities** under Products -> Tags
 4. **Add CSS** to style the badges
-5. **In Bricks:** use the `[cx_product_badges]` shortcode inside the product loop
+5. **Shortcode:** use `[cx_product_badges]` inside the product loop in Bricks, Elementor, Divi, Gutenberg, or any other builder

@@ -20,14 +20,14 @@ This repository ships **two functionally identical, independently installable co
 | 🇨🇿 Czech | [`cz/`](cz) | Czech | `Sleva`, `Vyprodáno` | [cz/README.md](cz/README.md) |
 | 🇬🇧 English | [`en/`](en) | English | `Sale`, `Out of stock` | [en/README.md](en/README.md) |
 
-Each folder is a self-contained, single-file WordPress plugin (`crystalex-product-badges.php`) plus an optional example stylesheet (`example.css`) with ready-made badge styling for Bricks Builder. To install, zip the folder's contents and upload it via **Plugins → Add New → Upload Plugin**.
+Each folder is a self-contained, single-file WordPress plugin (`crystalex-product-badges.php`) plus an optional example stylesheet (`example.css`) with ready-made badge styling (written with Bricks Builder in mind, but plain CSS that works with any theme or builder). To install, zip the folder's contents and upload it via **Plugins → Add New → Upload Plugin**.
 
 ## Highlights
 
 - **Priority-based display** — only the single highest-priority badge is rendered per product (priority 0–999, set per tag)
 - **Automatic status tags** — `Sale` / `Out of stock` (or `Sleva` / `Vyprodáno` in the Czech variant) are added and removed automatically as product state changes, each independently toggleable in the admin
 - **Zero inline styles** — the plugin outputs bare, semantic HTML (`.crystalex-badges-wrapper > a.badge.badge-{slug}`); all visual styling is yours to define
-- **Bricks Builder ready** — `[cx_product_badges]` shortcode for use as a Dynamic Data field
+- **Works with any page builder** — `[cx_product_badges]` shortcode renders anywhere WordPress renders shortcodes (Bricks, Elementor, Divi, Gutenberg, plain theme templates, …)
 - **WPML-aware** — badges follow WPML's taxonomy translations automatically, no extra config
 - **HPOS / Cart-Checkout Blocks compatible** — declares WooCommerce feature compatibility on `before_woocommerce_init`
 - **Bulk re-sync** — one-click admin action to recompute automatic tags across the whole catalog (useful after imports)
@@ -50,8 +50,11 @@ Independently toggle automatic `Sale` / `Out of stock` tagging, trigger a bulk r
 .
 ├── cz/                        Czech plugin variant (source + README + example.css)
 ├── en/                        English plugin variant (source + README + example.css)
+├── docs/
+│   └── screenshots/           Admin UI screenshots used in the READMEs
 ├── .github/
 │   ├── workflows/ci.yml       PHP lint + WordPress Coding Standards (PHPCS)
+│   ├── workflows/release.yml  Builds plugin ZIPs and publishes a GitHub Release on version tags
 │   ├── ISSUE_TEMPLATE/        Bug report / feature request templates
 │   └── pull_request_template.md
 ├── composer.json              Dev dependency: WordPress Coding Standards
