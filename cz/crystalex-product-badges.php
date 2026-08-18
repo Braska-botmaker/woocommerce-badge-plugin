@@ -303,7 +303,7 @@ function crystalex_process_all_products() {
  */
 function crystalex_add_admin_menu() {
 	// Přidej pod WooCommerce
-	add_submenu_page(
+	$submenu_hook = add_submenu_page(
 		'woocommerce',
 		__( 'Aktualizovat Badge', 'crystalex-badges' ),
 		__( 'Aktualizovat Badge', 'crystalex-badges' ),
@@ -313,7 +313,7 @@ function crystalex_add_admin_menu() {
 	);
 
 	// Přidej i jako samostatnou položku v hlavním menu (pro jistotu)
-	add_menu_page(
+	$toplevel_hook = add_menu_page(
 		__( 'CX Badge', 'crystalex-badges' ),
 		__( 'CX Badge', 'crystalex-badges' ),
 		'manage_options',
@@ -322,8 +322,76 @@ function crystalex_add_admin_menu() {
 		'dashicons-tag',
 		58
 	);
+
+	crystalex_admin_page_hooks( array( $submenu_hook, $toplevel_hook ) );
 }
 add_action( 'admin_menu', 'crystalex_add_admin_menu', 99 );
+
+/**
+ * Uloží a vrátí hook suffixy admin stránek pluginu, aby šlo CSS načíst
+ * jen na těchto dvou stránkách (viz crystalex_enqueue_admin_styles).
+ *
+ * @param array|null $set Pokud je předáno pole, uloží se jako nová hodnota.
+ * @return array Aktuálně uložené hook suffixy.
+ */
+function crystalex_admin_page_hooks( $set = null ) {
+	static $hooks = array();
+
+	if ( null !== $set ) {
+		$hooks = $set;
+	}
+
+	return $hooks;
+}
+
+/**
+ * CSS pro admin stránku pluginu (moderní, plná šířka).
+ * Načítá se přes wp_add_inline_style, ne jako natvrdo vypsaný <style> tag.
+ *
+ * @return string
+ */
+function crystalex_admin_page_css() {
+	return '
+		.cx-admin-wrap { max-width: none; }
+		.cx-admin-header { display: flex; align-items: center; gap: 10px; margin: 20px 0 24px; }
+		.cx-admin-header .dashicons { font-size: 28px; width: 28px; height: 28px; color: #2271b1; }
+		.cx-admin-header h1 { margin: 0; padding: 0; font-size: 23px; }
+		.cx-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 20px; width: 100%; box-sizing: border-box; }
+		.cx-card { background: #fff; border: 1px solid #e2e4e7; border-radius: 12px; padding: 24px; box-shadow: 0 1px 2px rgba(0, 0, 0, .04); box-sizing: border-box; width: 100%; }
+		.cx-card.cx-card-full { grid-column: 1 / -1; }
+		.cx-card h2 { margin-top: 0; font-size: 16px; }
+		.cx-card > p:first-of-type { color: #50575e; }
+		.cx-toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; border-top: 1px solid #f0f0f1; }
+		.cx-toggle-row:first-of-type { border-top: none; padding-top: 4px; }
+		.cx-toggle-text strong { display: block; }
+		.cx-toggle-text p { margin: 2px 0 0; color: #50575e; font-size: 13px; }
+		.cx-switch { position: relative; display: inline-block; width: 42px; height: 24px; flex-shrink: 0; }
+		.cx-switch input { opacity: 0; width: 0; height: 0; }
+		.cx-switch-slider { position: absolute; inset: 0; background: #c3c4c7; border-radius: 24px; cursor: pointer; transition: .15s; }
+		.cx-switch-slider::before { content: ""; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: .15s; }
+		.cx-switch input:checked + .cx-switch-slider { background: #2271b1; }
+		.cx-switch input:checked + .cx-switch-slider::before { transform: translateX(18px); }
+		.cx-switch input:focus-visible + .cx-switch-slider { outline: 2px solid #2271b1; outline-offset: 2px; }
+		.cx-pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+		.cx-pill-on { background: #d1fae5; color: #065f46; }
+		.cx-pill-off { background: #fde2e2; color: #991b1b; }
+		.cx-admin-wrap table.widefat { border-radius: 8px; overflow: hidden; }
+	';
+}
+
+/**
+ * Načte CSS admin stránky pluginu, ale jen na jejích dvou vlastních stránkách.
+ *
+ * @param string $hook_suffix Hook suffix aktuální admin stránky.
+ */
+function crystalex_enqueue_admin_styles( $hook_suffix ) {
+	if ( ! in_array( $hook_suffix, crystalex_admin_page_hooks(), true ) ) {
+		return;
+	}
+
+	wp_add_inline_style( 'wp-admin', crystalex_admin_page_css() );
+}
+add_action( 'admin_enqueue_scripts', 'crystalex_enqueue_admin_styles' );
 
 /**
  * Admin stránka pro zpracování produktů.
@@ -355,8 +423,11 @@ function crystalex_admin_page() {
 	$sleva_enabled     = crystalex_is_auto_tag_enabled( 'sleva' );
 	$vyprodano_enabled = crystalex_is_auto_tag_enabled( 'vyprodano' );
 	?>
-	<div class="wrap">
-		<h1><?php esc_html_e( 'CX Product Badges - Aktualizace', 'crystalex-badges' ); ?></h1>
+	<div class="wrap cx-admin-wrap">
+		<div class="cx-admin-header">
+			<span class="dashicons dashicons-tag"></span>
+			<h1><?php esc_html_e( 'CX Product Badges', 'crystalex-badges' ); ?></h1>
+		</div>
 
 		<?php if ( $message ) : ?>
 			<div class="notice notice-success">
@@ -370,99 +441,101 @@ function crystalex_admin_page() {
 			</div>
 		<?php endif; ?>
 
-		<div class="card">
-			<h2><?php esc_html_e( 'Nastavení automatického tagování', 'crystalex-badges' ); ?></h2>
-			<p><?php esc_html_e( 'Zde můžete samostatně zapnout nebo vypnout automatické přidávání badge podle stavu produktu.', 'crystalex-badges' ); ?></p>
-			<form method="post">
-				<?php wp_nonce_field( 'cx_save_settings' ); ?>
-				<table class="form-table">
-					<tr>
-						<th scope="row"><?php esc_html_e( 'Badge "Sleva"', 'crystalex-badges' ); ?></th>
-						<td>
-							<label>
-								<input type="checkbox" name="cx_auto_tag_sleva" value="1" <?php checked( $sleva_enabled ); ?>>
-								<?php esc_html_e( 'Automaticky přidávat/odebírat tag "Sleva" podle akční ceny produktu', 'crystalex-badges' ); ?>
-							</label>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row"><?php esc_html_e( 'Badge "Vyprodáno"', 'crystalex-badges' ); ?></th>
-						<td>
-							<label>
-								<input type="checkbox" name="cx_auto_tag_vyprodano" value="1" <?php checked( $vyprodano_enabled ); ?>>
-								<?php esc_html_e( 'Automaticky přidávat/odebírat tag "Vyprodáno" podle skladové dostupnosti', 'crystalex-badges' ); ?>
-							</label>
-						</td>
-					</tr>
+		<div class="cx-grid">
+			<div class="cx-card">
+				<h2><?php esc_html_e( 'Nastavení automatického tagování', 'crystalex-badges' ); ?></h2>
+				<p><?php esc_html_e( 'Zde můžete samostatně zapnout nebo vypnout automatické přidávání badge podle stavu produktu.', 'crystalex-badges' ); ?></p>
+				<form method="post">
+					<?php wp_nonce_field( 'cx_save_settings' ); ?>
+					<div class="cx-toggle-row">
+						<div class="cx-toggle-text">
+							<strong><?php esc_html_e( 'Badge "Sleva"', 'crystalex-badges' ); ?></strong>
+							<p><?php esc_html_e( 'Automaticky přidávat/odebírat tag "Sleva" podle akční ceny produktu', 'crystalex-badges' ); ?></p>
+						</div>
+						<label class="cx-switch">
+							<input type="checkbox" name="cx_auto_tag_sleva" value="1" <?php checked( $sleva_enabled ); ?>>
+							<span class="cx-switch-slider"></span>
+						</label>
+					</div>
+					<div class="cx-toggle-row">
+						<div class="cx-toggle-text">
+							<strong><?php esc_html_e( 'Badge "Vyprodáno"', 'crystalex-badges' ); ?></strong>
+							<p><?php esc_html_e( 'Automaticky přidávat/odebírat tag "Vyprodáno" podle skladové dostupnosti', 'crystalex-badges' ); ?></p>
+						</div>
+						<label class="cx-switch">
+							<input type="checkbox" name="cx_auto_tag_vyprodano" value="1" <?php checked( $vyprodano_enabled ); ?>>
+							<span class="cx-switch-slider"></span>
+						</label>
+					</div>
+					<p style="margin-top: 16px;">
+						<button type="submit" name="cx_save_settings" class="button button-primary">
+							<?php esc_html_e( 'Uložit nastavení', 'crystalex-badges' ); ?>
+						</button>
+					</p>
+				</form>
+			</div>
+
+			<div class="cx-card">
+				<h2><?php esc_html_e( 'Hromadná aktualizace badge', 'crystalex-badges' ); ?></h2>
+				<p><?php esc_html_e( 'Kliknutím na tlačítko zpracujete všechny produkty a přidáte/odeberete automatické badge (Sleva, Vyprodáno) podle aktuálního stavu produktů.', 'crystalex-badges' ); ?></p>
+				<p><strong><?php esc_html_e( 'Použijte tuto funkci:', 'crystalex-badges' ); ?></strong></p>
+				<ul style="list-style: disc; margin-left: 20px;">
+					<li><?php esc_html_e( 'Po první aktivaci pluginu', 'crystalex-badges' ); ?></li>
+					<li><?php esc_html_e( 'Po hromadném importu produktů', 'crystalex-badges' ); ?></li>
+					<li><?php esc_html_e( 'Když chcete přepočítat všechny automatické badge', 'crystalex-badges' ); ?></li>
+				</ul>
+				<form method="post">
+					<?php wp_nonce_field( 'cx_process_products' ); ?>
+					<p>
+						<button type="submit" name="cx_process_products" class="button button-primary button-hero">
+							<?php esc_html_e( 'Zpracovat všechny produkty', 'crystalex-badges' ); ?>
+						</button>
+					</p>
+				</form>
+			</div>
+
+			<div class="cx-card cx-card-full">
+				<h2><?php esc_html_e( 'Automatické badge', 'crystalex-badges' ); ?></h2>
+				<table class="widefat">
+					<thead>
+						<tr>
+							<th><?php esc_html_e( 'Badge', 'crystalex-badges' ); ?></th>
+							<th><?php esc_html_e( 'Podmínka', 'crystalex-badges' ); ?></th>
+							<th><?php esc_html_e( 'Priorita', 'crystalex-badges' ); ?></th>
+							<th><?php esc_html_e( 'Stav', 'crystalex-badges' ); ?></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><strong>Sleva</strong></td>
+							<td>Produkt má nastavenou akční cenu (sale price)</td>
+							<td>80</td>
+							<td>
+								<?php if ( $sleva_enabled ) : ?>
+									<span class="cx-pill cx-pill-on"><?php esc_html_e( 'Zapnuto', 'crystalex-badges' ); ?></span>
+								<?php else : ?>
+									<span class="cx-pill cx-pill-off"><?php esc_html_e( 'Vypnuto', 'crystalex-badges' ); ?></span>
+								<?php endif; ?>
+							</td>
+						</tr>
+						<tr>
+							<td><strong>Vyprodáno</strong></td>
+							<td>Produkt není skladem (out of stock)</td>
+							<td>30</td>
+							<td>
+								<?php if ( $vyprodano_enabled ) : ?>
+									<span class="cx-pill cx-pill-on"><?php esc_html_e( 'Zapnuto', 'crystalex-badges' ); ?></span>
+								<?php else : ?>
+									<span class="cx-pill cx-pill-off"><?php esc_html_e( 'Vypnuto', 'crystalex-badges' ); ?></span>
+								<?php endif; ?>
+							</td>
+						</tr>
+					</tbody>
 				</table>
-				<p>
-					<button type="submit" name="cx_save_settings" class="button button-primary">
-						<?php esc_html_e( 'Uložit nastavení', 'crystalex-badges' ); ?>
-					</button>
+				<p style="margin-top: 15px;">
+					<em><?php esc_html_e( 'Tyto badge se automaticky přidávají/odebírají při uložení produktu.', 'crystalex-badges' ); ?></em>
 				</p>
-			</form>
-		</div>
-
-		<div class="card" style="margin-top: 20px;">
-			<h2><?php esc_html_e( 'Hromadná aktualizace badge', 'crystalex-badges' ); ?></h2>
-			<p><?php esc_html_e( 'Kliknutím na tlačítko zpracujete všechny produkty a přidáte/odeberete automatické badge (Sleva, Vyprodáno) podle aktuálního stavu produktů.', 'crystalex-badges' ); ?></p>
-			<p><strong><?php esc_html_e( 'Použijte tuto funkci:', 'crystalex-badges' ); ?></strong></p>
-			<ul style="list-style: disc; margin-left: 20px;">
-				<li><?php esc_html_e( 'Po první aktivaci pluginu', 'crystalex-badges' ); ?></li>
-				<li><?php esc_html_e( 'Po hromadném importu produktů', 'crystalex-badges' ); ?></li>
-				<li><?php esc_html_e( 'Když chcete přepočítat všechny automatické badge', 'crystalex-badges' ); ?></li>
-			</ul>
-			<form method="post">
-				<?php wp_nonce_field( 'cx_process_products' ); ?>
-				<p>
-					<button type="submit" name="cx_process_products" class="button button-primary button-hero">
-						<?php esc_html_e( 'Zpracovat všechny produkty', 'crystalex-badges' ); ?>
-					</button>
-				</p>
-			</form>
-		</div>
-
-		<div class="card" style="margin-top: 20px;">
-			<h2><?php esc_html_e( 'Automatické badge', 'crystalex-badges' ); ?></h2>
-			<table class="widefat">
-				<thead>
-					<tr>
-						<th><?php esc_html_e( 'Badge', 'crystalex-badges' ); ?></th>
-						<th><?php esc_html_e( 'Podmínka', 'crystalex-badges' ); ?></th>
-						<th><?php esc_html_e( 'Priorita', 'crystalex-badges' ); ?></th>
-						<th><?php esc_html_e( 'Stav', 'crystalex-badges' ); ?></th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td><strong>Sleva</strong></td>
-						<td>Produkt má nastavenou akční cenu (sale price)</td>
-						<td>80</td>
-						<td>
-							<?php if ( $sleva_enabled ) : ?>
-								<span style="color:green;"><?php esc_html_e( 'Zapnuto', 'crystalex-badges' ); ?></span>
-							<?php else : ?>
-								<span style="color:red;"><?php esc_html_e( 'Vypnuto', 'crystalex-badges' ); ?></span>
-							<?php endif; ?>
-						</td>
-					</tr>
-					<tr>
-						<td><strong>Vyprodáno</strong></td>
-						<td>Produkt není skladem (out of stock)</td>
-						<td>30</td>
-						<td>
-							<?php if ( $vyprodano_enabled ) : ?>
-								<span style="color:green;"><?php esc_html_e( 'Zapnuto', 'crystalex-badges' ); ?></span>
-							<?php else : ?>
-								<span style="color:red;"><?php esc_html_e( 'Vypnuto', 'crystalex-badges' ); ?></span>
-							<?php endif; ?>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-			<p style="margin-top: 15px;">
-				<em><?php esc_html_e( 'Tyto badge se automaticky přidávají/odebírají při uložení produktu.', 'crystalex-badges' ); ?></em>
-			</p>
+			</div>
 		</div>
 	</div>
 	<?php

@@ -1,5 +1,5 @@
 {
-    "name": "crystalex/cx-product-badges",
+    "name": "braska-botmaker/woocommerce-badge-plugin",
     "description": "WooCommerce plugin for priority-based product badges with automatic Sale / Out of stock tagging. Ships as two standalone plugin variants (cz/, en/).",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",

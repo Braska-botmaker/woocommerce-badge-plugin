@@ -1,6 +1,7 @@
 # CX Product Badges
 
-[![CI](https://github.com/crystalex/cx-product-badges/actions/workflows/ci.yml/badge.svg)](https://github.com/crystalex/cx-product-badges/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/Braska-botmaker/woocommerce-badge-plugin?label=release)](https://github.com/Braska-botmaker/woocommerce-badge-plugin/releases/latest)
+[![CI](https://github.com/Braska-botmaker/woocommerce-badge-plugin/actions/workflows/ci.yml/badge.svg)](https://github.com/Braska-botmaker/woocommerce-badge-plugin/actions/workflows/ci.yml)
 [![License: GPL v2+](https://img.shields.io/badge/License-GPLv2%2B-blue.svg)](LICENSE)
 [![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-21759b.svg)](https://wordpress.org)
 [![WooCommerce](https://img.shields.io/badge/WooCommerce-7.0%2B-96588a.svg)](https://woocommerce.com)
