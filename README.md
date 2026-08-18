@@ -34,6 +34,16 @@ Each folder is a self-contained, single-file WordPress plugin (`crystalex-produc
 
 See either variant's README for full usage, styling, WPML setup, and troubleshooting docs.
 
+## Admin screen
+
+A single, self-contained settings screen under **WooCommerce → Update Badges** (or **CX Badge** in the main menu) — full width, modern card layout, no page-builder styling needed:
+
+![CX Badge menu item](docs/screenshots/cx-product-badges-admin-nav.png)
+
+![Admin settings screen — English variant](docs/screenshots/cx-product-badges-en_admin.png)
+
+Independently toggle automatic `Sale` / `Out of stock` tagging, trigger a bulk re-sync across the whole catalog, and see at a glance which automatic badges are active. Both language variants share the same layout, just with localized labels — see the [Czech README](cz/README.md) for a Czech-language screenshot.
+
 ## Repository layout
 
 ```text

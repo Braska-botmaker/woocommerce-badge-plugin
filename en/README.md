@@ -323,6 +323,10 @@ The plugin uses these hooks for rendering:
 
 ### Admin screen
 
+![CX Badge menu item](../docs/screenshots/cx-product-badges-admin-nav.png)
+
+![Admin settings screen](../docs/screenshots/cx-product-badges-en_admin.png)
+
 **Location:** CX Badge (top-level menu) or WooCommerce -> Update Badges
 
 **Features:**

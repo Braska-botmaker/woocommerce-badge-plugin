@@ -323,6 +323,10 @@ Plugin používá tyto hooky pro zobrazení:
 
 ### Admin rozhraní
 
+![Položka CX Badge v menu](../docs/screenshots/cx-product-badges-admin-nav.png)
+
+![Nastavení pluginu v administraci](../docs/screenshots/cx-product-badges-cz_admin.png)
+
 **Umístění:** CX Badge (levé menu) nebo WooCommerce → Aktualizovat Badge
 
 **Funkce:**
